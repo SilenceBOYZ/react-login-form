@@ -25,11 +25,10 @@ function LoginForm() {
       navigate("/home")
     }
   }
-
   return (
     <MainLayout>
       <div className="bg-transparent max-w-[450px] w-[375px] rounded-md backdrop-filter backdrop-blur-[20px]">
-        <form className="p-5 space-y-4" onSubmit={handleSubmit(handleOnSubmit)}>
+        <form className="p-5 space-y-4 border-2 rounded-md" onSubmit={handleSubmit(handleOnSubmit)}>
           <h1 className="text-center text-xl font-medium text-white mb-4">Đăng nhập</h1>
           <Input type="email" name="email" register={{
             ...register("email", {
@@ -74,4 +73,4 @@ function LoginForm() {
   )
 }
 
-export default LoginForm
+export default LoginForm;

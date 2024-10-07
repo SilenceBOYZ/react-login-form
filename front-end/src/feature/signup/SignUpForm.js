@@ -27,7 +27,8 @@ function SignUpForm() {
       toast.error(result.errMessage);
     }
   }
-
+  
+  console.log(errors);
   return (
     <MainLayout>
       <div className="bg-transparent max-w-[450px] w-[375px]  rounded-md backdrop-filter backdrop-blur-[20px]">
