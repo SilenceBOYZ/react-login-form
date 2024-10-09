@@ -1,7 +1,7 @@
 import MainLayout from "../../component/MainLayout"
 import { useForm } from "react-hook-form"
 import Input from "../../ui/Input";
-import {  Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { signup } from "../../services/userApi";
 import toast from "react-hot-toast";
 
@@ -16,104 +16,121 @@ function SignUpForm() {
 
   async function handleOnSubmit(data) {
     const result = await signup(data);
-    if(result.errCode === 0) {
+    if (result.errCode === 0) {
       toast.success(result.errMessage);
       reset();
     }
-    if(result.errCode === 1) {
+    if (result.errCode === 1) {
       toast.error(result.errMessage);
     }
-    if(result.errCode === 2) {
+    if (result.errCode === 2) {
       toast.error(result.errMessage);
     }
   }
-  
+
   console.log(errors);
   return (
     <MainLayout>
-      <div className="bg-transparent max-w-[450px] w-[375px]  rounded-md backdrop-filter backdrop-blur-[20px]">
-        <form className="p-5 space-y-4" onSubmit={handleSubmit(handleOnSubmit)}>
-          <h1 className="text-center text-xl font-medium text-white mb-4">Đăng ký</h1>
-          <Input type="text" name="username" register={{
-            ...register("username", {
-              required: "Không được để trống", minLength: {
-                value: 4,
-                message: "Tên người dùng phải từ 4 đến 12 ký tự"
-              }, maxLength: {
-                value: 30,
-                message: "Tên người dùng phải từ 4 đến 30 ký tự"
-              }
-            })
-          }}
-            errorMessage={errors}
-            label="username"
-            placeholder="Nhập tên người dùng"
-            width="w-full"
-          />
-          <Input type="email" name="email" register={{
-            ...register("email", {
-              required: "Không được để trống", minLength: {
-                value: 4,
-                message: "Email người dùng phải từ 4 đến 12 ký tự"
-              }, maxLength: {
-                value: 30,
-                message: "Email người dùng phải từ 4 đến 30 ký tự"
-              }, pattern: {
-                value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-                message: "Email không hợp lệ"
-              }
-            })
-          }}
-            errorMessage={errors}
-            label="Email"
-            placeholder="Example@gmail.com"
-            width="w-full"
-          />
-          <Input type="password" name="password" register={{
-            ...register("password", {
-              required: "Không được để trống", minLength: {
-                value: 4,
-                message: "Tên người dùng phải từ 4 đến 12 ký tự"
-              }, maxLength: {
-                value: 30,
-                message: "Tên người dùng phải từ 4 đến 30 ký tự"
-              }, pattern: {
-                value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                message: "Mật khẩu phải có 1 số, 1 tự đặc biệt và chữ in hoa"
-              }
-            })
-          }}
-            errorMessage={errors}
-            placeholder="Nhập mật khẩu"
-            width="w-full"
-          />
+      <div className="w-5/12">
+        <div
+          className={`bg-red-400 w-full h-full `}
+        >
+          <img className="w-full h-full" src="http://localhost:8080/img/backgroundLogin.jpg" alt="background login" />
+        </div>
+      </div>
 
-          <Input type="password" name="confirmPassword" register={{
-            ...register("confirmPassword", {
-              required: "Không được để trống", minLength: {
-                value: 4,
-                message: "Tên người dùng phải từ 4 đến 12 ký tự"
-              }, maxLength: {
-                value: 30,
-                message: "Tên người dùng phải từ 4 đến 30 ký tự"
-              }, pattern: {
-                value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                message: "Mật khẩu phải có 1 số, 1 tự đặc biệt và chữ in hoa"
-              },
-              validate: (fieldValue) => {
-                return fieldValue === getValues()?.password ? null : "Mật khẩu không trùng khớp"
-              }
-            })
-          }}
-            errorMessage={errors}
-            label="Email"
-            placeholder="Xác nhận mật khẩu"
-            width="w-full"
-          />
 
-          <button type="submit" className="text-center w-full py-2 px-4 border-2 rounded-3xl tracking-wider transition-all duration-300 bg-transparent outline-none text-white">Đăng nhập</button>
-          <p className="text-white w-full text-center text-lg">Bạn đã có tài khoản <Link to="/login" className="hover:text-violet-500 transition-all duration-300 font-medium">đăng nhập</Link></p>
-        </form>
+      <div className="p-6 w-7/12">
+        <div className="text-sm text-right w-full font-semibold text-neutral-500 mb-4">
+          <span className="mr-2">Already have an account</span>
+          <Link to={'/login'} className="p-0.5 px-3 border-[2px] rounded-xl text-sm"> <span className="text-[0.75rem]">Sign in</span></Link>
+        </div>
+
+        <div className="px-[3rem]">
+          <div className="mb-4 font-bold">
+            <h1 className="uppercase ">Welcome to <strong className="text-3xl font-bold">CODESTRINGERS</strong></h1>
+            <span className="text-neutral-500 text-sm ">Register your account</span>
+          </div>
+
+          <form className="space-y-2 " onSubmit={handleSubmit(handleOnSubmit)}>
+            <Input type="text" name="username" register={{
+              ...register("username", {
+                required: "The input can not be empty", minLength: {
+                  value: 6,
+                  message: "Username must larger than 5 characters"
+                }, maxLength: {
+                  value: 12,
+                  message: "username must less than 12 characters"
+                }
+              })
+            }}
+              labelField="User name"
+              errorMessage={errors}
+              placeholder="Thanhtri2307"
+              width="w-full"
+            />
+            <Input type="email" name="email" register={{
+              ...register("email", {
+                required: "The input can not be empty", minLength: {
+                  value: 4,
+                  message: "Email người dùng phải từ 4 đến 12 ký tự"
+                }, maxLength: {
+                  value: 30,
+                  message: "Email người dùng phải từ 4 đến 30 ký tự"
+                }, pattern: {
+                  value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                  message: "Email không hợp lệ"
+                }
+              })
+            }}
+              errorMessage={errors}
+              labelField="Email"
+              placeholder="Example@gmail.com"
+              width="w-full"
+            />
+            <Input type="password" name="password" register={{
+              ...register("password", {
+                required: "The input can not be empty", minLength: {
+                  value: 7,
+                  message: "Password must be greater than 8 characters"
+                }, maxLength: {
+                  value: 16,
+                  message: "Password must be less than 8 characters"
+                }
+              })
+            }}
+              labelField="Password"
+              errorMessage={errors}
+              placeholder="Enter your password"
+              width="w-full"
+            />
+
+            <Input type="password" name="confirmPassword" register={{
+              ...register("confirmPassword", {
+                required: "The input can not be empty", minLength: {
+                  value: 7,
+                  message: "Password must be greater than 8 characters"
+                }, maxLength: {
+                  value: 16,
+                  message: "Password must be less than 8 characters"
+                },
+                pattern: {
+                  value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                  message: "Password contains the number, special character, capitialize"
+                },
+                validate: (fieldValue) => {
+                  return fieldValue === getValues()?.password ? null : "The password does not match"
+                }
+              })
+            }}
+              labelField="Confirm password"
+              errorMessage={errors}
+              placeholder="Enter your password"
+              width="w-full"
+            />
+            <button type="submit" className="float-end px-12 py-1.5 text-white font-semibold rounded-full mt-[0rem_!important]" style={{ 'backgroundColor': '#F56D6D' }}>Regist</button>
+          </form>
+        </div>
       </div>
     </MainLayout>
   )

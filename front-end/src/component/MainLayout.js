@@ -1,7 +1,10 @@
-function MainLayout({ children }) {
+function MainLayout({ children, configWidth = 'w-[65rem]' }) {
+  
   return (
-    <div className="absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]" >
-      {children}
+    <div className="w-full flex items-center h-dvh">
+      <div className={`${configWidth} max-w-[60rem] h-[32.5rem] max-h-[32.5rem] mx-auto flex bg-white rounded-xl overflow-hidden shadow-xl box-border`}>
+        {children}
+      </div>
     </div>
   )
 }

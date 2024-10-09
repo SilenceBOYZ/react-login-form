@@ -11,7 +11,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   position: relative;
   height: 100vh;
-  background-color: #A5B68D;
+  background-color: #EE4E4E;
   /* background: url("../public/background.jpg"); */
   background-position: center center;
 }
@@ -21,12 +21,25 @@ code {
     monospace;
 }
 
-input:placeholder-shown {
-  background-color: transparent;
+.bg-header {
+  background-color: #E8BB9A;
 }
 
-input::placeholder {
-  color: #fff; /* Màu chữ khi chưa có giá trị */
+th {
+  text-align: left;
+  font-weight: 500;
+}
+th, td {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+tr {
+  border-bottom: 2px solid #C7C3C3;
+}
+
+tr.row-body:last-child {
+  border-bottom: none;
 }
 
 input:-webkit-autofill,
