@@ -21,8 +21,8 @@ let sendEmail = async ({ to, subject, html, from = process.env.NODEMAILER_EMAILF
 // Phương thức để gọi ở api
 let sendPasswordResetEmail = async (email, resetToken) => {
   let message =
-    `<p>Please use the below token to reset your password with the <code>/apiRouter/reset-password</code> api route:</p>
-      <p><strong>Your token string</strong><code>${resetToken}</code></p>`;
+    `<p>Please use the below token to reset your password</code> api route:</p>
+    <p><strong>Your token string: </strong><code>${resetToken}</code></p>`;
 
   await sendEmail({
     from: process.env.NODEMAILER_EMAILFROM,

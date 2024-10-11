@@ -1,8 +1,7 @@
 import { useForm } from "react-hook-form";
 import Input from "../../ui/Input"
 import MainLayout from "../../component/MainLayout";
-import { Link, Navigate } from "react-router-dom";
-import { FaArrowRightLong } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 function CreateNewPassword() {
   const {
@@ -12,9 +11,9 @@ function CreateNewPassword() {
     formState: { errors },
   } = useForm();
 
-  async function handleOnSubmit(data) {
+  // async function handleOnSubmit(data) {
 
-  }
+  // }
 
   return (
     <MainLayout>
@@ -38,7 +37,7 @@ function CreateNewPassword() {
             <span className="text-neutral-500 text-sm ">Enter your email to receive the token</span>
           </div>
 
-          <form className="space-y-4" onSubmit={handleSubmit(handleOnSubmit)}>
+          <form className="space-y-4" onSubmit={handleSubmit()}>
 
             <Input type="password" name="password" register={{
               ...register("password", {

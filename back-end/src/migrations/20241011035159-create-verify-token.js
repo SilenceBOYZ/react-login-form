@@ -17,8 +17,6 @@ module.exports = {
       exp_date: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: new Date(new Date().getTime() + 3 * 60 * 60 * 1000),
-        // Set the exp for token (3 hour)
       },
       user_id: {
         allowNull: false,
