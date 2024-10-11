@@ -28,7 +28,7 @@ function Home() {
   function handleLogout() {
     sessionStorage.clear();
     logout();
-    navigate("/authentication")
+    navigate("/authentication");
   }
 
   return (

@@ -1,7 +1,15 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import MainLayout from "../../component/MainLayout";
+import { useEffect } from "react";
 
 function Authentication() {
+  const navigate = useNavigate();
+  const authenticated = sessionStorage.getItem("user-login");
+
+  useEffect(() => {
+    if (authenticated) navigate("../home");
+  }, [authenticated, navigate]);
+
   return (
     <MainLayout>
       <div className="w-5/12">

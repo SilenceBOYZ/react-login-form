@@ -7,6 +7,7 @@ import ResetPassword from "./feature/Authentication/ResetPassword";
 import CreateNewPassword from "./feature/Authentication/CreateNewPassword";
 import Authentication from "./feature/Authentication/Authentication";
 import VerifyEmail from "./feature/Authentication/VerifyEmail";
+import Error from "./ui/Error";
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
             <Route path="create-new-password" element={<CreateNewPassword />} />
             <Route path="signup" element={<SignUpForm />} />
           </Route>
-          <Route path="*" element={<div>Not page have found</div>} />
+          <Route path="*" element={<Error />} />
         </Routes>
       </BrowserRouter>
       <Toaster />

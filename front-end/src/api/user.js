@@ -20,6 +20,11 @@ async function sendToken(userData) {
   return data;
 }
 
+async function resetPassword(userData) {
+  let data = await instance.post("/api/user/reset-password", userData);
+  return data;
+}
+
 
 async function logout() {
   let data = await instance.post("/api/user/logout");
@@ -31,5 +36,6 @@ export {
   signup,
   logout,
   verify,
-  sendToken
+  sendToken, 
+  resetPassword
 } 

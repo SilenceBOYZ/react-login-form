@@ -75,6 +75,10 @@ function SignUpForm() {
                   value: 15,
                   message: "username must less than 12 characters",
                 },
+                pattern: {
+                  value: /^[\w\s-]+$/,
+                  message: "Invalid name",
+                },
               }),
             }}
             labelField="User name"

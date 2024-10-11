@@ -1,54 +1,56 @@
 import { useForm } from "react-hook-form";
 import Input from "../../ui/Input";
-import { Link, Navigate } from "react-router-dom";
-import { login, sendToken } from "../../api/user";
+import { Link, useNavigate } from "react-router-dom";
+import { sendToken, verify } from "../../api/user";
 import toast from "react-hot-toast";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { useState } from "react";
 
 function ResetPassword() {
-  const [isSubmit, setIsSubmit] = useState(false);
+  const [isSubmit] = useState(false);
+  const navigate = useNavigate();
 
   const {
-    register,
-    handleSubmit,
+    register: regisSecet,
+    handleSubmit: handleTokenSubmit,
     formState: { errors },
   } = useForm();
 
   const {
     register: registEmail,
     handleSubmit: handleSubmitEmail,
-    formState: { errorsEmail },
+    getValues: getValuesEmail,
+    formState: { errors: errorsEmail },
   } = useForm();
 
-  async function handleOnSubmit(data) {
-    let result = await login(data);
-    if (result.errCode === 1) {
-      toast.error(result.errMessage);
-    }
-    if (result.errCode === 2) {
-      toast.error(result.errMessage);
-    }
-    if (result.errCode === 0) {
-      Navigate("/home");
+  // Chia Hai form ra xử lý từng request
+  async function handleOnSubmitToken(data) {
+    data.email = getValuesEmail()?.email;
+    let result = await verify(data);
+    console.log(result);
+    if (result.errCode) toast.error(result.message);
+    else {
+      toast.success(result.message);
+      navigate('../create-new-password', {state: {username: result.username}})
     }
   }
 
   async function handleOnSendToken(data) {
     let result = await sendToken(data);
-    console.log(result);
+    if (!result.errCode) toast.success(result.message);
+    else toast.error(result.message);
   }
 
   return (
     <>
       <div className="text-sm text-right w-full font-semibold text-neutral-500 mb-4">
-        <span className="mr-2">Create a new account</span>
+        <span className="mr-2">Login to account</span>
         <Link
-          to={"../signup"}
+          to={"../login"}
           className="p-0.5 px-3 border-[2px] rounded-xl text-sm"
         >
           {" "}
-          <span className="text-[0.75rem] pr-1">Regist</span>
+          <span className="text-[0.75rem] pr-1">Sign in</span>
         </Link>
       </div>
 
@@ -62,7 +64,10 @@ function ResetPassword() {
           </span>
         </div>
 
-        <form className="space-y-3 " onSubmit={handleSubmitEmail(handleOnSendToken)}>
+        <form
+          className="space-y-3 "
+          onSubmit={handleSubmitEmail(handleOnSendToken)}
+        >
           <div>
             <Input
               type="email"
@@ -107,21 +112,16 @@ function ResetPassword() {
           </div>
         </form>
 
-        <form className="space-y-3" onSubmit={handleSubmit(handleOnSubmit)}>
+        <form
+          className="space-y-3"
+          onSubmit={handleTokenSubmit(handleOnSubmitToken)}
+        >
           <Input
             type="password"
-            name="resetPasswordString"
+            name="secretKey"
             register={{
-              ...register("secretKey", {
+              ...regisSecet("secretKey", {
                 required: "The input can not be empty",
-                minLength: {
-                  value: 7,
-                  message: "Password must be greater than 8 characters",
-                },
-                maxLength: {
-                  value: 16,
-                  message: "Password must be less than 8 characters",
-                },
               }),
             }}
             errorMessage={errors}

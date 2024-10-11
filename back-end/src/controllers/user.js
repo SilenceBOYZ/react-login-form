@@ -1,8 +1,7 @@
 const db = require("../models/index");
-const { hashPassword, compateHash, compareHash } = require("../utils/hashPassword");
+const { hashPassword, compareHash } = require("../utils/hashPassword");
 const { generateToken } = require("../utils/generatesToken");
 const { v4: uuidv4 } = require('uuid');
-const { where } = require("sequelize");
 const { sendPasswordResetEmail } = require("../config/nodemailer");
 
 let createUser = async (req, res) => {
@@ -91,6 +90,7 @@ let verifyEmail = async (req, res) => {
           }
         });
         result.errCode = false;
+        result.username = checkEmailExist.username;
         result.message = "Verify account successfully";
       } else {
         result.errCode = true;
@@ -103,6 +103,8 @@ let verifyEmail = async (req, res) => {
   })
   res.status(200).json(respone);
 }
+
+
 
 let userLogin = async (req, res) => {
   let data = req.body;
@@ -177,27 +179,52 @@ let sendToken = async (req, res) => {
         where: {
           user_id: user_id,
         },
-      })
+      });
       let now = new Date();
       let exp_token = new Date(getTokenFromUser.exp_date);
-      console.log(now);
-      console.log(exp_token);
       if (exp_token > now) {
         // Nếu ngày tạo của token lớn hơn ngày hiện tại
         // Send token đến mail
-        sendPasswordResetEmail(data.email, getTokenFromUser.token_string);
+        sendPasswordResetEmail(data.email, getTokenFromUser.token_String);
+        result.errCode = false;
+        result.message = "Token have send to your email";
       } else {
         // tạo lại token
-        let token_string = await db.VerifyToken.update({
+        await db.VerifyToken.update({
           token_string: uuidv4(),
           exp_date: new Date(new Date().getTime() + 3 * 60 * 60 * 1000),
         }, {
           where: {
             id: getTokenFromUser.id,
           }
-        })
+        });
+        result.errCode = false;
+        result.message = "Token have send to your email";
         sendPasswordResetEmail(data.email, getTokenFromUser.token_string);
       }
+      resolve(result);
+    } catch (e) {
+      reject(e);
+    }
+  })
+  res.status(200).json(respone);
+}
+
+
+let resetPassword = async(req, res) => {
+  let data = req.body;
+  let respone = await new Promise(async (resolve, reject) => {
+    try {
+      let result = {};
+      let updatePassword = await db.User.update({
+        password: hashPassword(data.password)
+      }, {
+        where: {
+          username: data.username
+        }
+      })
+      result.errCode = false;
+      result.message = "Update password success";
       resolve(result);
     } catch (e) {
       reject(e);
@@ -211,5 +238,6 @@ module.exports = {
   userLogin,
   verifyEmail,
   userLogout,
-  sendToken
+  sendToken,
+  resetPassword
 }
