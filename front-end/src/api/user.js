@@ -31,11 +31,17 @@ async function logout() {
   return data;
 }
 
+async function selectUsers(pageNum) {
+  let data = await instance.get(`/api/user/select-user?pageNum=${pageNum}`);
+  return data;
+}
+
 export {
   login,
   signup,
   logout,
   verify,
   sendToken, 
-  resetPassword
+  resetPassword,
+  selectUsers
 } 

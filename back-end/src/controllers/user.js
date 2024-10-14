@@ -1,4 +1,5 @@
 const db = require("../models/index");
+const { QueryTypes } = require('sequelize');
 const { hashPassword, compareHash } = require("../utils/hashPassword");
 const { generateToken } = require("../utils/generatesToken");
 const { v4: uuidv4 } = require('uuid');
@@ -6,6 +7,10 @@ const { sendPasswordResetEmail } = require("../config/nodemailer");
 
 let createUser = async (req, res) => {
   let data = req.body;
+  if(!Object.keys(data).length) {
+    res.status(400).json("Server didn't get any user input data");
+    return;
+  }
   let respone = await new Promise(async (resolve, reject) => {
     try {
       let result = {};
@@ -60,6 +65,10 @@ let createUser = async (req, res) => {
 
 let verifyEmail = async (req, res) => {
   let data = req.body;
+  if(!Object.keys(data).length) {
+    res.status(400).json("Server didn't get any user data");
+    return;
+  }
   let respone = await new Promise(async (resolve, reject) => {
     try {
       let result = {};
@@ -108,6 +117,10 @@ let verifyEmail = async (req, res) => {
 
 let userLogin = async (req, res) => {
   let data = req.body;
+  if(!Object.keys(data).length) {
+    res.status(400).json("Server didn't get any user data");
+    return;
+  }
   let respone = await new Promise(async (resolve, reject) => {
     try {
       let result = {};
@@ -125,9 +138,12 @@ let userLogin = async (req, res) => {
       }
 
       let checkPassword = compareHash(data.password, user.password);
+      console.log(checkPassword);
       if (!checkPassword) {
         result.errCode = 2;
         result.message = 'Wrong password';
+        resolve(result);
+        return;
       }
 
       if (!user.is_active) {
@@ -154,10 +170,15 @@ let userLogin = async (req, res) => {
 
 let userLogout = async (req, res) => {
   await req.session.destroy();
+  res.status(200).json("Logout success")
 }
 
 let sendToken = async (req, res) => {
   let data = req.body;
+  if(!Object.keys(data).length) {
+    res.status(400).json("Server didn't get any user data");
+    return;
+  }
   let respone = await new Promise(async (resolve, reject) => {
     try {
       let result = {};
@@ -166,7 +187,6 @@ let sendToken = async (req, res) => {
           email: data.email
         }
       });
-      console.log(checkEmailExist);
       if (!checkEmailExist) {
         result.errCode = true;
         result.message = "The email doesn't exist";
@@ -200,7 +220,7 @@ let sendToken = async (req, res) => {
         });
         result.errCode = false;
         result.message = "Token have send to your email";
-        sendPasswordResetEmail(data.email, getTokenFromUser.token_string);
+        sendPasswordResetEmail(data.email, getTokenFromUser.token_String);
       }
       resolve(result);
     } catch (e) {
@@ -211,8 +231,12 @@ let sendToken = async (req, res) => {
 }
 
 
-let resetPassword = async(req, res) => {
+let resetPassword = async (req, res) => {
   let data = req.body;
+  if(!Object.keys(data).length) {
+    res.status(400).json("Server didn't get any user data");
+    return;
+  }
   let respone = await new Promise(async (resolve, reject) => {
     try {
       let result = {};
@@ -233,11 +257,49 @@ let resetPassword = async(req, res) => {
   res.status(200).json(respone);
 }
 
+let selectAllUsers = async (req, res) => {
+  let pageNum = parseInt(req.query.pageNum);
+  
+  if(!pageNum) {
+    pageNum = 1;
+  }
+  try {
+    // Select user và role
+    let data = {};
+    let users = await db.sequelize.query(`SELECT users.id, users.username, users.email, users.is_active, roles.name, users.createdAt, users.updatedAt FROM users, roles WHERE users.role_id = roles.id`,
+      { type: QueryTypes.SELECT }
+    )
+    if (!users.length) {
+      res.status(200).json("There are no user in the system");
+      return;
+    }
+    // Làm chức năng phân trang
+    let pageSize = 7;
+    let startIndex = (pageNum - 1) * pageSize;
+    let totalLink = Math.ceil(users.length / pageSize);
+    let result = await db.sequelize.query(`SELECT users.id, users.username, users.email, users.is_active, roles.name as rolename, users.createdAt, users.updatedAt FROM users, roles WHERE users.role_id = roles.id LIMIT ${startIndex} , ${pageSize}`, { type: QueryTypes.SELECT })
+    if (!result.length) {
+      data.errCode = 1;
+      data.message = "There are no user in the system";
+      res.status(200).json(data);
+      return;
+    }
+    data.totalLink = totalLink;
+    data.errCode = 0;
+    data.message = 'Loading data suceessfully';
+    data.data = result;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+
 module.exports = {
   createUser,
   userLogin,
   verifyEmail,
   userLogout,
   sendToken,
-  resetPassword
+  resetPassword,
+  selectAllUsers
 }

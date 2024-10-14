@@ -3,9 +3,12 @@ import Input from "../../ui/Input";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../api/user";
 import toast from "react-hot-toast";
+import { useAuthContext } from "../../context/AuthenticateContext";
 
 function LoginForm() {
   const navigate = useNavigate();
+  const { setUserInfor } = useAuthContext();
+
   const {
     register,
     handleSubmit,
@@ -25,7 +28,8 @@ function LoginForm() {
       navigate("../verify-email");
     }
     if (result.errCode === 0) {
-      sessionStorage.setItem('user-login', result.username)
+      sessionStorage.setItem("user-login", result.username);
+      setUserInfor(result.username);
       navigate("/home");
     }
   }

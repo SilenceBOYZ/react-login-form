@@ -1,14 +1,15 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import MainLayout from "../../component/MainLayout";
 import { useEffect } from "react";
+import { useAuthContext } from "../../context/AuthenticateContext";
 
 function Authentication() {
   const navigate = useNavigate();
-  const authenticated = sessionStorage.getItem("user-login");
+  const { userInfor } = useAuthContext();
 
   useEffect(() => {
-    if (authenticated) navigate("../home");
-  }, [authenticated, navigate]);
+    if (userInfor) navigate("../home");
+  }, [navigate, userInfor]);
 
   return (
     <MainLayout>
