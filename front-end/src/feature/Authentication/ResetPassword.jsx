@@ -49,7 +49,7 @@ function ResetPassword() {
           to={"../login"}
           className="p-0.5 px-3 border-[2px] rounded-xl text-sm"
         >
-          {" "}a\
+          {" "}
           <span className="text-[0.75rem] pr-1">Sign in</span>
         </Link>
       </div>

@@ -114,7 +114,6 @@ let verifyEmail = async (req, res) => {
 }
 
 
-
 let userLogin = async (req, res) => {
   let data = req.body;
   if(!Object.keys(data).length) {

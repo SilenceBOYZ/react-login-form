@@ -16,6 +16,7 @@ function Home() {
     if (!userInfor) navigate("../authentication");
   }, [userInfor, navigate]);
 
+
   function handleLogout() {
     setUserInfor(null);
     sessionStorage.clear();

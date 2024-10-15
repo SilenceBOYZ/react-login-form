@@ -5,9 +5,7 @@
   "main": "./back-end/src/server",
   "scripts": {
     "test": "This is server",
-    "start": "nodemon --inspect ./back-end/src/server.js",
-    "create-role": "node ./back-end/src/models/Role.model.js",
-    "create-user": "node ./back-end/src/models/User.model.js"
+    "start": "nodemon --inspect ./back-end/src/server.js"
   },
   "author": "thanhtri",
   "license": "ISC",
