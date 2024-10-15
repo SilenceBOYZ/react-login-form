@@ -1,17 +1,22 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import LoginForm from "./feature/Authentication/LoginForm";
-import SignUpForm from "./feature/Authentication/SignUpForm";
 import { Toaster } from "react-hot-toast";
-import Home from "./component/Home";
-import ResetPassword from "./feature/Authentication/ResetPassword";
-import CreateNewPassword from "./feature/Authentication/CreateNewPassword";
-import Authentication from "./feature/Authentication/Authentication";
-import VerifyEmail from "./feature/Authentication/VerifyEmail";
-import Error from "./ui/Error";
+
+import LoginForm from "./component/User/LoginForm";
+import SignUpForm from "./component/User/LoginForm";
+import ResetPassword from "./component/User/LoginForm";
+import CreateNewPassword from "./component/User/LoginForm";
+import VerifyEmail from "./component/User/LoginForm";
+
+import Home from "./page/Home";
+import Authentication from "./page/Authentication";
+
+import Error from "./component/ui/Error";
+
+import { AuthenticateProvider } from "./context/AuthenticateContext";
 
 function App() {
   return (
-    <>
+    <AuthenticateProvider>
       <BrowserRouter>
         <Routes>
           <Route index element={<Navigate replace to="home" />} />
@@ -28,7 +33,7 @@ function App() {
         </Routes>
       </BrowserRouter>
       <Toaster />
-    </>
+    </AuthenticateProvider>
   );
 }
 

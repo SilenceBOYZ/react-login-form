@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { logout } from "../api/user";
 import { useAuthContext } from "../context/AuthenticateContext";
-import UserManagement from "../feature/Dashboard/UserManagement";
+import UserManagement from "../component/User/UserManagement";
 
 function Home() {
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ function Home() {
   useEffect(() => {
     if (!userInfor) navigate("../authentication");
   }, [userInfor, navigate]);
+
 
   function handleLogout() {
     setUserInfor(null);

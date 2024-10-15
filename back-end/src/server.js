@@ -9,29 +9,21 @@ configDotenv();
 const PORT = process.env.PORT || 9000
 const app = express();
 const session = require("express-session");
-
-const RedisStore = require("connect-redis").default; // default lo  calhost
-const {createClient} = require('redis');
-// Initialize client.
-let redisClient = createClient()
-redisClient.connect().then(
-  console.log("Connect to redis success")
-).catch(console.error)
-
-let redisStore = new RedisStore({
-  client: redisClient,
-});
+const redis = require("./config/redis.js");
 
 const staticFile = path.join(__dirname, '../public');
+
 app.use(express.static(staticFile));
+
 app.use(cors({
   origin: "http://localhost:5173",
   credentials: true,
 }))
 
+redis.connect();
 app.use(session({
   secret: 'keyboard cat',
-  store: redisStore,
+  store: redis.store,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -47,9 +39,8 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-
 route(app);
 
 app.listen(PORT, () => {
-  console.log("server is running on port ", PORT);
+  console.log("server is running on port", PORT);
 })

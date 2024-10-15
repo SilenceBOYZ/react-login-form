@@ -5,9 +5,7 @@
   "main": "./back-end/src/server",
   "scripts": {
     "test": "This is server",
-    "start": "nodemon --inspect ./back-end/src/server.js",
-    "create-role": "node ./back-end/src/models/Role.model.js",
-    "create-user": "node ./back-end/src/models/User.model.js"
+    "start": "nodemon --inspect ./back-end/src/server.js"
   },
   "author": "thanhtri",
   "license": "ISC",
@@ -19,6 +17,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-session": "^1.18.1",
+    "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.7",
     "nodemailer": "^6.9.15",

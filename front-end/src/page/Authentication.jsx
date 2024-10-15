@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import MainLayout from "../../component/MainLayout";
+import MainLayout from "../component/ui/MainLayout";
 import { useEffect } from "react";
-import { useAuthContext } from "../../context/AuthenticateContext";
+import { useAuthContext } from "../context/AuthenticateContext";
 
 function Authentication() {
   const navigate = useNavigate();
