@@ -8,10 +8,11 @@ import CreateNewPassword from "./feature/Authentication/CreateNewPassword";
 import Authentication from "./feature/Authentication/Authentication";
 import VerifyEmail from "./feature/Authentication/VerifyEmail";
 import Error from "./ui/Error";
+import { AuthenticateProvider } from "./context/AuthenticateContext";
 
 function App() {
   return (
-    <>
+    <AuthenticateProvider>
       <BrowserRouter>
         <Routes>
           <Route index element={<Navigate replace to="home" />} />
@@ -28,7 +29,7 @@ function App() {
         </Routes>
       </BrowserRouter>
       <Toaster />
-    </>
+    </AuthenticateProvider>
   );
 }
 

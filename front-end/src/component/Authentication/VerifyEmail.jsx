@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import Input from "../../ui/Input";
+import Input from "../Input";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { useState } from "react";

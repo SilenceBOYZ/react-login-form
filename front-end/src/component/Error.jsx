@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import MainLayout from "../component/MainLayout";
+import MainLayout from "./MainLayout";
 import { FaArrowRightLong } from "react-icons/fa6";
 function Error() {
   let navigate = useNavigate();
