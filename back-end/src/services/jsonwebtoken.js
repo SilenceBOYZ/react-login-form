@@ -9,4 +9,13 @@ let generateToken = (userId) => {
   return token;
 }
 
-module.exports = { generateToken }
+let verifyToken = (token) => {
+  try {
+    const isValid = jwt.verify(token, process.env.JWT_SECRET);
+    return isValid;
+  } catch (error) {
+    return error.message;
+  }
+}
+
+module.exports = { generateToken, verifyToken }

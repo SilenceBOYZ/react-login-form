@@ -1,4 +1,4 @@
-const { verifyToken } = require("../utils/verifyToken");
+const { verifyToken } = require("../services/jsonwebtoken");
 
 let checkUserAccess = async (req, res, next) => {
   try {
