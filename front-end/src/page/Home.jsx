@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { logout } from "../api/user";
 import { useAuthContext } from "../context/AuthenticateContext";
-import UserManagement from "../component/user/UserManagement";
+import UserManagement from "../component/User/UserManagement";
 
 function Home() {
   const navigate = useNavigate();

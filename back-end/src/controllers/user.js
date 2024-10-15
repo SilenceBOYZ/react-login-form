@@ -4,15 +4,12 @@ const { hashPassword, compareHash } = require("../utils/hashPassword");
 const { generateToken } = require("../services/jsonwebtoken");
 const { v4: uuidv4 } = require('uuid');
 const { sendPasswordResetEmail } = require("../services/nodemailer");
+const { registValidate, loginValidate } = require("../utils/validateData");
 
 const createUser = async (req, res) => {
-  const data = req.body;
-  if (!Object.keys(data).length) {
-    res.status(400).json("Server didn't get any user input data");
-    return;
-  }
-  const result = {};
   try {
+    const data = await registValidate.validateAsync(req.body);
+    const result = {};
     const checkEmailExist = await db.User.findOne({
       where: {
         email: data.email
@@ -57,21 +54,19 @@ const createUser = async (req, res) => {
     await sendPasswordResetEmail(newUser.email, token_string);
     result.errCode = false;
     result.message = "Create user successfully";
-
+    res.status(200).json(result);
   } catch (err) {
+    if (err.isJoi === true) {
+      res.status(422).json(err.message)
+      return;
+    }
     res.status(400).json("Error in create user feature: " + err.message);
     return;
   }
-  res.status(200).json(result);
 }
 
 const verifyEmail = async (req, res) => {
   const data = req.body;
-  if (!Object.keys(data).length) {
-    res.status(400).json("Server didn't get any user data");
-    return;
-  }
-
   const result = {};
   try {
     const checkEmailExist = await db.User.findOne({
@@ -112,32 +107,30 @@ const verifyEmail = async (req, res) => {
       result.errCode = true;
       result.message = "Invalid token string";
     }
+    res.status(200).json(result);
   } catch (err) {
     res.status(400).json("Error from verify email feature: " + err.message);
     return;
   }
-  res.status(200).json(result);
 }
 
 const userLogin = async (req, res) => {
-  const data = req.body;
-  if (!Object.keys(data).length) {
-    res.status(400).json("Server didn't get any user data");
-    return;
-  }
-
-  const result = {};
   try {
+    // validate inputs field
+    const result = {};
+    const data = await loginValidate.validateAsync(req.body)
+
     const user = await db.User.findOne({
       where: {
-        username: data.username,
+        email: data.email,
       },
       raw: true,
     },);
+
     if (!user) {
       result.errCode = 1;
-      result.message = "User not found";
-      resolve(result);
+      result.message = "User doesn't exist";
+      res.status(400).json(result);
       return;
     }
 
@@ -146,29 +139,31 @@ const userLogin = async (req, res) => {
     if (!checkPassword) {
       result.errCode = 2;
       result.message = 'Wrong password';
-      resolve(result);
+      res.status(400).json(result);
       return;
     }
 
     if (!user.is_active) {
       result.errCode = 3;
       result.message = "User haven't verify email";
-      resolve(result);
+      res.status(400).json(result);
       return;
     }
-
     let accessToken = generateToken(user.username);
     req.session.userLogin = accessToken;
-
     result.errCode = 0;
     result.role = user.role_id;
     result.message = 'login successfully';
     result.username = accessToken;
+    res.status(200).json(result);
   } catch (err) {
-    res.status(400).json("Error in login feature: " + err.message);
+    if (err.isJoi === true) {
+      res.status(422).json(err.message)
+      return;
+    }
+    res.status(500).json("Error in login feature: " + err.message);
     return;
   }
-  res.status(200).json(result);
 }
 
 const userLogout = async (req, res) => {
@@ -182,13 +177,9 @@ const userLogout = async (req, res) => {
 }
 
 const sendToken = async (req, res) => {
-  const data = req.body;
-  if (!Object.keys(data).length) {
-    res.status(400).json("Server didn't get any user data");
-    return;
-  }
-  const result = {};
   try {
+    const data = req.body;
+    const result = {};
     const checkEmailExist = await db.User.findOne({
       where: {
         email: data.email
@@ -231,21 +222,17 @@ const sendToken = async (req, res) => {
       result.errCode = false;
       result.message = "Token have send to your email";
     }
+    res.status(200).json(result);
   } catch (err) {
     res.status(400).json("Error in send token feature: " + err.message);
     return;
   }
-  res.status(200).json(result);
 }
 
 const resetPassword = async (req, res) => {
-  const data = req.body;
-  if (!Object.keys(data).length) {
-    res.status(400).json("Server didn't get any user data");
-    return;
-  }
-  const result = {};
   try {
+    const data = req.body;
+    const result = {};
     const updatePassword = await db.User.update({
       password: hashPassword(data.password)
     }, {
@@ -255,11 +242,11 @@ const resetPassword = async (req, res) => {
     })
     result.errCode = false;
     result.message = "Update password success";
+    res.status(200).json(result);
   } catch (err) {
     res.status(400).json("Error in reset password feature: " + err.message);
     return;
   }
-  res.status(200).json(result);
 }
 
 const selectAllUsers = async (req, res) => {
@@ -292,10 +279,10 @@ const selectAllUsers = async (req, res) => {
     result.errCode = false;
     result.message = 'Loading data suceessfully';
     result.data = userRecords;
+    res.status(200).json(result);
   } catch (err) {
-    res.status(400).json("Error select user all records feature: ", err.message);
+    res.status(500).json("Error select user all records feature: ", err.message);
   }
-  res.status(200).json(result);
 }
 
 module.exports = {

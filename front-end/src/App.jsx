@@ -1,11 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
-import LoginForm from "./component/user/LoginForm";
-import SignUpForm from "./component/user/LoginForm";
-import ResetPassword from "./component/user/LoginForm";
-import CreateNewPassword from "./component/user/LoginForm";
-import VerifyEmail from "./component/user/LoginForm";
+import LoginForm from "./component/User/LoginForm";
+import SignUpForm from "./component/User/LoginForm";
+import ResetPassword from "./component/User/LoginForm";
+import CreateNewPassword from "./component/User/LoginForm";
+import VerifyEmail from "./component/User/LoginForm";
 
 import Home from "./page/Home";
 import Authentication from "./page/Authentication";
