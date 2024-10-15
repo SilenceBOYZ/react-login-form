@@ -3,26 +3,33 @@
   "version": "1.0.0",
   "description": "back-end server",
   "main": "./back-end/src/server",
-  "type": "module",
   "scripts": {
     "test": "This is server",
     "start": "nodemon --inspect ./back-end/src/server.js",
-    "create-table": "node back-end/src/models/Users.js"
+    "create-role": "node ./back-end/src/models/Role.model.js",
+    "create-user": "node ./back-end/src/models/User.model.js"
   },
   "author": "thanhtri",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.2",
+    "connect-redis": "^7.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-session": "^1.18.1",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.7",
+    "nodemailer": "^6.9.15",
     "nodemon": "^3.1.1",
-    "sequelize": "^6.37.4"
+    "redis": "^4.7.0",
+    "sequelize": "^6.37.4",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "bcrypt": "^5.1.1"
+    "babel-register": "^6.26.0",
+    "bcrypt": "^5.1.1",
+    "sequelize-cli": "^6.6.2"
   }
 }
