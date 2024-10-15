@@ -1,13 +1,17 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import LoginForm from "./feature/Authentication/LoginForm";
-import SignUpForm from "./feature/Authentication/SignUpForm";
 import { Toaster } from "react-hot-toast";
-import Home from "./component/Home";
-import ResetPassword from "./feature/Authentication/ResetPassword";
-import CreateNewPassword from "./feature/Authentication/CreateNewPassword";
-import Authentication from "./feature/Authentication/Authentication";
-import VerifyEmail from "./feature/Authentication/VerifyEmail";
-import Error from "./ui/Error";
+
+import LoginForm from "./component/user/LoginForm";
+import SignUpForm from "./component/user/LoginForm";
+import ResetPassword from "./component/user/LoginForm";
+import CreateNewPassword from "./component/user/LoginForm";
+import VerifyEmail from "./component/user/LoginForm";
+
+import Home from "./page/Home";
+import Authentication from "./page/Authentication";
+
+import Error from "./component/ui/Error";
+
 import { AuthenticateProvider } from "./context/AuthenticateContext";
 
 function App() {

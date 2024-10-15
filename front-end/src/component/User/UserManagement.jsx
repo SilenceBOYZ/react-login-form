@@ -5,7 +5,7 @@ import { selectUsers } from "../../api/user";
 import UserView from "./UserView";
 import { useSearchParams } from "react-router-dom";
 import LinearProgress from "@mui/material/LinearProgress";
-import Pagination from "../../ui/Pagination";
+import Pagination from "../ui/Pagination";
 
 function UserManagement() {
   const [users, setUsers] = useState([]);

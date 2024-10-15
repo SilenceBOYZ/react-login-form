@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import Input from "../../ui/Input";
+import Input from "../ui/Input";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../api/user";
 import toast from "react-hot-toast";
