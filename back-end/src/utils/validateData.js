@@ -58,6 +58,8 @@ const confirm_password = Joi.string()
     'any.required': 'Confirm password is required'
   });
 
+
+
 const registValidate = Joi.object({
   username: username,
   password: password,
@@ -73,5 +75,6 @@ const loginValidate = Joi.object({
 
 module.exports = {
   registValidate,
-  loginValidate
+  loginValidate,
+  emailValidate: email 
 }

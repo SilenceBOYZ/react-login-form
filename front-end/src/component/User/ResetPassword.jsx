@@ -1,143 +1,128 @@
 import { useForm } from "react-hook-form";
 import Input from "../ui/Input";
-import { Link, useNavigate } from "react-router-dom";
-import { sendToken, verify } from "../../api/user";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { resetPassword } from "../../api/user";
 import toast from "react-hot-toast";
-import { FaArrowRightLong } from "react-icons/fa6";
 import { useState } from "react";
-
 function ResetPassword() {
-  const [isSubmit] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false);
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get("userId");
+  const tokenString = searchParams.get("tokenString");
+
   const navigate = useNavigate();
 
   const {
-    register: regisSecet,
-    handleSubmit: handleTokenSubmit,
+    register,
+    handleSubmit,
+    getValues,
+    reset,
     formState: { errors },
   } = useForm();
 
-  const {
-    register: registEmail,
-    handleSubmit: handleSubmitEmail,
-    getValues: getValuesEmail,
-    formState: { errors: errorsEmail },
-  } = useForm();
-
-  // Chia Hai form ra xử lý từng request
-  async function handleOnSubmitToken(data) {
-    data.email = getValuesEmail()?.email;
-    let result = await verify(data);
-    console.log(result);
-    if (result.errCode) toast.error(result.message);
-    else {
+  async function handleOnSubmit(data) {
+    setIsSubmit(true);
+    let result = await resetPassword(data, userId, tokenString);
+    if (!result.errCode) {
       toast.success(result.message);
-      navigate('../create-new-password', {state: {username: result.username}})
+      reset();
+      navigate('../authentication');
+    } else {
+      toast.error(result.message);
+      setIsSubmit(false);
     }
   }
-
-  async function handleOnSendToken(data) {
-    let result = await sendToken(data);
-    if (!result.errCode) toast.success(result.message);
-    else toast.error(result.message);
-  }
-
   return (
     <>
       <div className="text-sm text-right w-full font-semibold text-neutral-500 mb-4">
-        <span className="mr-2">Login to account</span>
+        <span className="mr-2">Already have an account</span>
         <Link
           to={"../login"}
           className="p-0.5 px-3 border-[2px] rounded-xl text-sm"
         >
           {" "}
-          <span className="text-[0.75rem] pr-1">Sign in</span>
+          <span className="text-[0.75rem]">Sign in</span>
         </Link>
       </div>
 
-      <div className="px-[3rem] box-border">
-        <div className="mb-4 font-bold">
+      <div className="px-[3rem]">
+        <div className="font-bold text-center mb-8">
           <h1 className="">
-            <strong className="text-3xl font-bold">ResetYourPassword</strong>
+            <strong className="text-3xl font-bold">Reset your password</strong>
           </h1>
-          <span className="text-neutral-500 text-sm ">
-            Enter your email to receive the token
+          <span className="text-neutral-500 text-sm">
+            Type your new password
           </span>
         </div>
 
-        <form
-          className="space-y-3 "
-          onSubmit={handleSubmitEmail(handleOnSendToken)}
-        >
-          <div>
-            <Input
-              type="email"
-              name="email"
-              disable={isSubmit}
-              register={{
-                ...registEmail("email", {
-                  required: "The input can not be empty",
-                  minLength: {
-                    value: 4,
-                    message: "Email người dùng phải từ 4 đến 12 ký tự",
-                  },
-                  maxLength: {
-                    value: 30,
-                    message: "Email người dùng phải từ 4 đến 30 ký tự",
-                  },
-                  pattern: {
-                    value:
-                      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-                    message: "Email không hợp lệ",
-                  },
-                }),
-              }}
-              errorMessage={errorsEmail}
-              labelField="Enter your email"
-              placeholder="Example@gmail.com"
-              width="w-full"
-            />
-            {!isSubmit ? (
-              <button
-                type="submit"
-                className="text-neutral-500 font-semibold text-sm flex justify-end w-full items-center gap-1 hover:text-red-500 transition-all duration-300"
-              >
-                <span>Get the token to your email</span>
-                <FaArrowRightLong />
-              </button>
-            ) : (
-              <span className="block w-full text-right text-sm text-red-600 font-semibold">
-                Check your gmail to get the token...
-              </span>
-            )}
-          </div>
-        </form>
-
-        <form
-          className="space-y-3"
-          onSubmit={handleTokenSubmit(handleOnSubmitToken)}
-        >
+        <form className="space-y-2 " onSubmit={handleSubmit(handleOnSubmit)}>
           <Input
+            disable={isSubmit}
             type="password"
-            name="secretKey"
+            name="password"
             register={{
-              ...regisSecet("secretKey", {
+              ...register("password", {
                 required: "The input can not be empty",
+                minLength: {
+                  value: 7,
+                  message: "Password must be greater than 8 characters",
+                },
+                maxLength: {
+                  value: 16,
+                  message: "Password must be less than 8 characters",
+                },
+                pattern: {
+                  value: /^(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9@]+$/,
+                  message:
+                    "Must contain uppercase, digit, @sybmols, no whitespace",
+                },
               }),
             }}
+            labelField="Password"
             errorMessage={errors}
-            labelField="Reset password token"
-            placeholder="Enter your "
+            placeholder="Enter your password"
             width="w-full"
           />
-          <div className="flex items-center justify-end mt-[.5rem_!important]">
-            <button
-              type="submit"
-              className="px-12 py-1.5 text-white font-semibold rounded-sm "
-              style={{ backgroundColor: "#F56D6D" }}
-            >
-              Verify
-            </button>
-          </div>
+
+          <Input
+            disable={isSubmit}
+            type="password"
+            name="confirm_password"
+            register={{
+              ...register("confirm_password", {
+                required: "The input can not be empty",
+                minLength: {
+                  value: 7,
+                  message: "Password must be greater than 8 characters",
+                },
+                maxLength: {
+                  value: 16,
+                  message: "Password must be less than 8 characters",
+                },
+                pattern: {
+                  value: /^(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9@]+$/,
+                  message:
+                    "Must contain uppercase, digit, @sybmols, no whitespace",
+                },
+                validate: (fieldValue) => {
+                  return fieldValue === getValues()?.password
+                    ? null
+                    : "The password does not match";
+                },
+              }),
+            }}
+            labelField="Confirm password"
+            errorMessage={errors}
+            placeholder="Enter your password"
+            width="w-full"
+          />
+          <button
+            type="submit"
+            className=" px-12 py-1.5 text-white font-semibold rounded-md w-full"
+            style={{ backgroundColor: "#F56D6D" }}
+          >
+            Reset Your password
+          </button>
         </form>
       </div>
     </>

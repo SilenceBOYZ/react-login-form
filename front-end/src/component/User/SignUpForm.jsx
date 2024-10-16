@@ -20,16 +20,11 @@ function SignUpForm() {
   async function handleOnSubmit(data) {
     setIsSubmit(true);
     const result = await signup(data);
-    if (result.errCode === 0) {
+    if (!result.errCode) {
       toast.success(result.message);
       navigate("../verify-email");
       reset();
-    }
-    if (result.errCode === 1) {
-      toast.error(result.message);
-      setIsSubmit(false);
-    }
-    if (result.errCode === 2) {
+    } else {
       toast.error(result.message);
       setIsSubmit(false);
     }
@@ -120,6 +115,10 @@ function SignUpForm() {
                   value: 16,
                   message: "Password must be less than 8 characters",
                 },
+                pattern: {
+                  value: /^(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9@]+$/,
+                  message: "Must contain uppercase, digit, @sybmols, no whitespace",
+                }
               }),
             }}
             labelField="Password"
@@ -131,9 +130,9 @@ function SignUpForm() {
           <Input
             disable={isSubmit}
             type="password"
-            name="confirmPassword"
+            name="confirm_password"
             register={{
-              ...register("confirmPassword", {
+              ...register("confirm_password", {
                 required: "The input can not be empty",
                 minLength: {
                   value: 7,
@@ -144,10 +143,8 @@ function SignUpForm() {
                   message: "Password must be less than 8 characters",
                 },
                 pattern: {
-                  value:
-                    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                  message:
-                    "Password contains the number, special character, capitialize",
+                  value: /^(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9@]+$/,
+                  message: "Must contain uppercase, digit, @sybmols, no whitespace",
                 },
                 validate: (fieldValue) => {
                   return fieldValue === getValues()?.password

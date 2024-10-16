@@ -4,10 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../api/user";
 import toast from "react-hot-toast";
 import { useAuthContext } from "../../context/AuthenticateContext";
+import { useState } from "react";
 
 function LoginForm() {
   const navigate = useNavigate();
   const { setUserInfor } = useAuthContext();
+  const [isSubmit, setIsSubmit] = useState(false);
 
   const {
     register,
@@ -16,23 +18,20 @@ function LoginForm() {
   } = useForm();
 
   async function handleOnSubmit(data) {
+    setIsSubmit(true);
     let result = await login(data);
-    if (result.errCode === 1) {
+    if (result.errCode) {
+      setIsSubmit(true);
       toast.error(result.message);
-    }
-    if (result.errCode === 2) {
-      toast.error(result.message);
-    }
-    if (result.errCode === 3) {
-      toast.error(result.message);
-      navigate("../verify-email");
-    }
-    if (result.errCode === 0) {
+      setIsSubmit(false);
+    } else {
       sessionStorage.setItem("user-login", result.username);
       setUserInfor(result.username);
       navigate("/home");
+      toast.success(result.message);
     }
   }
+  
   return (
     <>
       <div className="text-sm text-right w-full font-semibold text-neutral-500 mb-4">
@@ -59,31 +58,27 @@ function LoginForm() {
 
         <form className="space-y-2" onSubmit={handleSubmit(handleOnSubmit)}>
           <Input
-            type="text"
-            name="username"
+            disable={isSubmit}
+            type="email"
+            name="email"
             register={{
-              ...register("username", {
+              ...register("email", {
                 required: "The input can not be empty",
-                minLength: {
-                  value: 6,
-                  message: "Invalid name",
-                },
-                maxLength: {
-                  value: 15,
-                  message: "Invalid name",
-                },
                 pattern: {
-                  value: /^[\w\s-]+$/,
-                  message: "Invalid name",
+                  value:
+                    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                  message: "Invalid Email",
                 },
               }),
             }}
             errorMessage={errors}
-            labelField="Username"
-            placeholder="Enter your name"
+            labelField="Email"
+            placeholder="Example@gmail.com"
             width="w-full"
           />
+
           <Input
+            disable={isSubmit}
             type="password"
             name="password"
             register={{
@@ -97,6 +92,11 @@ function LoginForm() {
                   value: 16,
                   message: "Password must be less than 8 characters",
                 },
+                pattern: {
+                  value: /^(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9@]+$/,
+                  message:
+                    "Must contain uppercase, digit, @sybmols, no whitespace",
+                },
               }),
             }}
             labelField="Password"
@@ -106,6 +106,7 @@ function LoginForm() {
           />
           <div className="flex items-center justify-between">
             <button
+              disabled={isSubmit}
               type="submit"
               className="px-12 py-1.5 text-white font-semibold rounded-full mt-[.5rem_!important]"
               style={{ backgroundColor: "#F56D6D" }}
@@ -113,7 +114,7 @@ function LoginForm() {
               Login
             </button>
             <Link
-              to={"../reset-password"}
+              to={"../forgot-password"}
               className="rounded-xl text-sm font-semibold text-neutral-600 text-right hover:cursor-pointer hover:text-red-600 transition-all duration-300"
             >
               Forgot your password ?
