@@ -20,8 +20,13 @@ async function sendToken(userData) {
   return data;
 }
 
-async function resetPassword(userData) {
-  let data = await instance.post("/api/user/reset-password", userData);
+async function resetPassword(userData, userId, tokenString) {
+  let data = await instance.post(`/api/user/reset-password?userId=${userId}&tokenString=${tokenString}`, userData);
+  return data;
+}
+
+async function checkToken(userId, tokenString) {
+  let data = await instance.get(`/api/user/reset-password/userId/${userId}/tokenString/${tokenString}`);
   return data;
 }
 
@@ -41,7 +46,8 @@ export {
   signup,
   logout,
   verify,
-  sendToken, 
+  sendToken,
   resetPassword,
-  selectUsers
+  selectUsers,
+  checkToken
 } 

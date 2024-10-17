@@ -4,12 +4,12 @@ const email = Joi.string()
   .email()
   .lowercase()
   .min(5)  // Minimum length of 5 characters
-  .max(30) // Maximum length of 20 characters
+  .max(50) // Maximum length of 50 characters
   .required()
   .messages({
     'string.email': 'Please provide a valid email address',
-    'string.min': 'Email must be at least 5 characters long',
-    'string.max': 'Email cannot be more than 30 characters long',
+    'string.min': 'Invalid character length',
+    'string.max': 'Invalid character length',
     'string.empty': 'Email cannot be empty',
     'any.required': 'Email is required'
   });
@@ -19,32 +19,28 @@ const password = Joi.string()
   .pattern(new RegExp('^\\S+$')) // No whitespace allowed
   .pattern(new RegExp('(?=.*[A-Z])')) // At least one uppercase letter
   .pattern(new RegExp('(?=.*[0-9])')) // At least one digit
-  .min(8)
-  .max(16)
+  .min(5)
+  .max(40)
   .required()
   .messages({
-    'string.pattern.base': 'Password can only contain letters, numbers, and @ cannot contain whitespace',
-    'string.pattern.name': 'Password cannot contain whitespace',
-    'string.pattern.name': 'Password must contain at least one uppercase letter',
-    'string.pattern.name': 'Password must contain at least one digit',
-    'string.pattern.name': 'Password must contain at least one @ symbol',
-    'string.min': 'Password must be at least 6 characters long',
-    'string.max': 'Password cannot be more than 30 characters long',
+    'string.pattern.base': 'Password can only contain letters, uppercase, numbers, and @ cannot contain whitespace',
+    'string.min': 'Invalid character length',
+    'string.max': 'Invalid character length',
     'string.empty': 'Password cannot be empty',
     'any.required': 'Password is required'
   });
 
 const username = Joi.string()
   .alphanum()
-  .min(6)
-  .max(16)
+  .min(4)
+  .max(30)
   .pattern(new RegExp('^[a-zA-Z0-9]+$'))
   .lowercase()
   .required()
   .messages({
     'string.pattern.base': 'Username can only contain letters and numbers (no special characters or whitespace)',
-    'string.min': 'Username must be at least 6 characters long',
-    'string.max': 'Username cannot be more than 16 characters long',
+    'string.min': 'Invalid character length',
+    'string.max': 'Invalid character length',
     'string.empty': 'Username cannot be empty',
     'any.required': 'Username is required'
   });
@@ -73,5 +69,6 @@ const loginValidate = Joi.object({
 
 module.exports = {
   registValidate,
-  loginValidate
+  loginValidate,
+  emailValidate: email 
 }
