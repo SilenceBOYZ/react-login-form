@@ -24,11 +24,12 @@ const sendPasswordResetEmail = async (email, userId, resetToken) => {
       subject: "Reset your password account",
       html: message,
     }
-
     // nodemailer's method to send mail
-    await transporter.sendMail(mailOption);
+    await transporter.sendMail(mailOption)
+      .then()
+      .catch(err => err);
   } catch (err) {
-    console.log("Error in nodemailer services: " + err.message);
+    console.log("Error in nodemailer services: " + err);
     return;
   }
 }
@@ -58,10 +59,11 @@ const sendLinkToVerifyAccount = async (email, userId, tokenString) => {
     };
 
     // nodemailer's method to send mail
-    await transporter.sendMail(mailOption);
+    const isSent = await transporter.sendMail(mailOption);
+    return isSent;
   } catch (err) {
     console.log("Error in nodemailer services: " + err.message);
-    return;
+    throw new Error(err);
   }
 }
 

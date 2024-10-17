@@ -23,10 +23,10 @@ function UserManagement() {
 
   return (
     <>
-      <div className="px-12 py-6 h-full ">
+      <div className="px-12 py-6 h-full">
         <div className=" px-6 py-4 shadow-lg rounded-xl border-2 ">
-          <div className="mb-4 w-full flex justify-between">
-            <div className="flex w-1/2">
+          <div className="mb-4 w-full flex gap-6">
+            <div className="flex ">
               <input
                 type="text"
                 placeholder="Type the user name"
@@ -36,7 +36,7 @@ function UserManagement() {
                 <FaSearch className="text-neutral-500" />
               </button>
             </div>
-            <div className="relative w-1/2 flex justify-end">
+            <div className="relative flex ">
               <button className="border-2 p-2 rounded-md ">
                 <IoFilter />
                 <ul className="absolute text-left text-sm bg-white px-4 py-2 rounded-md shadow-md z-10 right-0 top-10 invisible opacity-0 cursor-pointer">

@@ -10,8 +10,9 @@ function ForgotPassword() {
   const navigate = useNavigate();
 
   const {
-    register: registEmail,
-    handleSubmit: handleSubmitEmail,
+    register,
+    handleSubmit,
+    setError,
     formState: { errors: errorsEmail },
   } = useForm();
 
@@ -24,7 +25,7 @@ function ForgotPassword() {
         state: { email: data.email },
       });
     } else {
-      toast.error(result.message);
+      setError(result.fieldError, { type: 'custom', message: result.message });
       setIsSubmit(false);
     }
   }
@@ -54,22 +55,22 @@ function ForgotPassword() {
 
         <form
           className="space-y-6"
-          onSubmit={handleSubmitEmail(handleOnSendToken)}
+          onSubmit={handleSubmit(handleOnSendToken)}
         >
           <Input
             type="email"
             name="email"
             disable={isSubmit}
             register={{
-              ...registEmail("email", {
+              ...register("email", {
                 required: "The input can not be empty",
                 minLength: {
                   value: 4,
-                  message: "Email người dùng phải từ 4 đến 12 ký tự",
+                  message: "Invalid character length",
                 },
                 maxLength: {
-                  value: 30,
-                  message: "Email người dùng phải từ 4 đến 30 ký tự",
+                  value: 50,
+                  message: "Invalid character length",
                 },
                 pattern: {
                   value:

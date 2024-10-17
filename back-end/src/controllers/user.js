@@ -1,6 +1,6 @@
 const db = require("../models/index");
-const { QueryTypes, where } = require('sequelize');
-const { hashPassword, compareHash } = require("../utils/hashPassword");
+const { QueryTypes } = require('sequelize');
+const { hashString, compareHash } = require("../utils/hashString");
 const { generateToken, verifyToken: verify, verifyToken } = require("../services/jsonwebtoken");
 const { v4: uuidv4 } = require('uuid');
 const { sendPasswordResetEmail, sendLinkToVerifyAccount } = require("../services/nodemailer");
@@ -10,75 +10,77 @@ const createUser = async (req, res) => {
   const result = {};
   try {
     const data = await registValidate.validateAsync(req.body);
-    console.log(data);
     const checkEmailExist = await db.User.findOne({
       where: {
         email: data.email
       }
     });
+
     if (checkEmailExist) {
       result.errCode = true;
-      result.message = "The email have been existed";
-      res.status(200).json(result);
-      return;
-    };
+      result.fieldError = "email";
+      result.message = "The email has been existed";
+    } else if (!checkEmailExist) {
+      const checkUserExist = await db.User.findOne({
+        where: {
+          username: data.username,
+        }
+      })
+      if (checkUserExist) {
+        result.errCode = true;
+        result.fieldError = "username";
+        result.message = "The user has been existed";
+      } else {
+        // #### Insert user into table #### //
+        const newUser = await db.User.create({
+          username: data.username.toLowerCase(),
+          email: data.email.toLowerCase(),
+          password: hashString(data.password),
+          role_id: 2,
+        });
 
-    const checkUserExist = await db.User.findOne({
-      where: {
-        username: data.username,
+        const userId = parseInt(newUser.dataValues.id);
+
+        const { token_string } = await db.VerifyToken.create({
+          token_string: uuidv4(),
+          // Set the exp for token (24 hour)
+          exp_date: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+          user_id: userId,
+        });
+
+        const userIdToken = generateToken(userId);
+        const hashTokenString = generateToken(token_string);
+
+        // This will throw an error if email get error
+        await sendLinkToVerifyAccount(newUser.email, userIdToken, hashTokenString);
+        // Can you transaction the roll back email 
+        // research later
+        result.errCode = false;
+        result.message = "Create user successfully";
       }
-    })
-
-    if (checkUserExist) {
-      result.errCode = true;
-      result.message = "The user have been existed";
-      res.status(200).json(result);
-      return;
-    };
-
-    // Insert user into table
-    const newUser = await db.User.create({
-      username: data.username,
-      email: data.email,
-      password: hashPassword(data.password),
-      role_id: 2,
-    })
-
-    const userId = parseInt(newUser.dataValues.id);
-
-    const { token_string } = await db.VerifyToken.create({
-      token_string: uuidv4(),
-      // Set the exp for token (3 hour)
-      exp_date: new Date(new Date().getTime() + 3 * 60 * 60 * 1000),
-      user_id: userId,
-    });
-
-    const userIdToken = generateToken(userId);
-    const hashTokenString = generateToken(token_string);
-
-    await sendLinkToVerifyAccount(newUser.email, userIdToken, hashTokenString);
-
-    result.errCode = false;
-    result.message = "Create user successfully";
+    }
     res.status(200).json(result);
   } catch (err) {
     if (err.isJoi === true) {
       result.errCode = true;
       result.message = err.message;
-      res.status(200).json(result)
-      return;
+      res.status(200).json(result);
+    } else {
+      console.error("Error in create user feature: " + err.message);
+      result.errCode = true;
+      result.message = "Error in nodemailer: " + err.message;
+      res.status(500).json(result);
     }
-    res.status(500).json("Error in create user feature: " + err.message);
-    return;
   }
 }
+
 
 const verifyEmail = async (req, res) => {
   // làm một cái check param
   const { userId: userTokenId, tokenString: token } = req.params;
-  const result = {};
+  // const result = {};
   try {
-    //get data after verify with jwt
+    // get data after verify with jwt
     const userId = parseInt(verify(userTokenId).value);
     const tokenString = verify(token).value;
 
@@ -90,6 +92,7 @@ const verifyEmail = async (req, res) => {
     });
 
     if (!getTokenFromUser) {
+      // result = null;
       res.redirect(process.env.FRONTEND_HOST + "authentication/verify-error");
       return;
     }
@@ -108,11 +111,14 @@ const verifyEmail = async (req, res) => {
           token_String: tokenString,
         },
       });
-      result.errCode = false;
-      result.message = "Verify account successfully";
+
+      // result.errCode = false;
+      // result.message = "Verify account successfully";
     } else {
-      result.errCode = true;
-      result.message = "Invalid token string";
+      res.redirect(process.env.FRONTEND_HOST + "authentication/verify-error");
+      return;
+      // result.errCode = true;
+      // result.message = "Invalid token string";
     }
     res.redirect(process.env.FRONTEND_HOST + "authentication/verify-success");
   } catch (err) {
@@ -126,7 +132,6 @@ const userLogin = async (req, res) => {
   try {
     // validate inputs field
     const data = await loginValidate.validateAsync(req.body);
-
     const user = await db.User.findOne({
       where: {
         email: data.email,
@@ -136,43 +141,48 @@ const userLogin = async (req, res) => {
 
     if (!user) {
       result.errCode = true;
-      result.message = "User doesn't exist";
-      res.status(200).json(result);
-      return;
-    }
-
-    const checkPassword = compareHash(data.password, user.password);
-
-    if (!checkPassword) {
-      result.errCode = true;
-      result.message = 'Wrong password';
-      res.status(200).json(result);
-      return;
-    }
-
-    if (!user.is_active) {
-      result.errCode = true;
-      result.message = "User haven't verify email";
-      res.status(200).json(result);
-      return;
+      result.fieldError = "email"
+      result.message = "the email does not exist";
     } else {
-      let accessToken = generateToken(user.username);
-      req.session.userLogin = accessToken;
-      result.errCode = false;
-      result.role = user.role_id;
-      result.message = 'login successfully';
-      result.username = accessToken;
-      res.status(200).json(result);
+      const checkPassword = compareHash(data.password, user.password);
+      if (!checkPassword) {
+        result.errCode = true;
+        result.fieldError = "password"
+        result.message = 'Wrong password';
+      } else {
+        if (!user.is_active) {
+          result.errCode = true;
+          result.status = 401;
+          result.message = "User haven't verify email";
+        } else {
+          const { rolename } = await db.Role.findOne({
+            attributes: [['name', 'rolename']],
+            where: {
+              id: user.role_id,
+            },
+            raw: true,
+          });
+          const accessToken = generateToken(user.username);
+          req.session.userLogin = accessToken;
+          result.errCode = false;
+          result.data = {
+            name: user.username,
+            rolename,
+            accessToken
+          };
+          result.message = 'login successfully';
+        }
+      }
     }
+    res.status(200).json(result);
   } catch (err) {
     if (err.isJoi === true) {
       result.errCode = true;
       result.message = err.message;
       res.status(200).json(result)
-      return;
+    } else {
+      res.status(400).json("Error in login feature: " + err.message);
     }
-    res.status(500).json("Error in login feature: " + err.message);
-    return;
   }
 }
 
@@ -186,6 +196,7 @@ const userLogout = async (req, res) => {
   }
 }
 
+// Send to token to user email
 const sendToken = async (req, res) => {
   try {
     const result = {};
@@ -195,21 +206,24 @@ const sendToken = async (req, res) => {
         email
       }
     });
+
     if (!checkEmailExist) {
       result.errCode = true;
+      result.fieldError = "email";
       result.message = "The email doesn't exist";
       res.status(200).json(result);
       return;
     };
-    console.log("Testing");
+
     const user_id = parseInt(checkEmailExist.id);
+
     const getTokenFromUser = await db.VerifyToken.findOne({
       attributes: ["token_String", "exp_date", "id"],
       where: {
         user_id: user_id,
       },
     });
-    console.log("Testing");
+
     if (!getTokenFromUser) {
       const { token_string } = await db.VerifyToken.create({
         token_string: uuidv4(),
@@ -223,13 +237,15 @@ const sendToken = async (req, res) => {
       result.errCode = false;
       result.message = "Check your email account";
       res.status(200).json(result);
+      return;
     }
+
     let now = new Date();
     let exp_token = new Date(getTokenFromUser.exp_date);
-
     if (exp_token < now) {
       // Nếu ngày tạo của token lớn hơn ngày hiện tại
       // Send token đến mail
+
       await db.VerifyToken.update({
         token_string: uuidv4(),
         exp_date: new Date(new Date().getTime() + 3 * 60 * 60 * 1000),
@@ -238,6 +254,7 @@ const sendToken = async (req, res) => {
           id: getTokenFromUser.id,
         }
       });
+
       await sendPasswordResetEmail(email, generateToken(user_id), generateToken(getTokenFromUser.token_String));
       result.errCode = false;
       result.message = "the new token have send to your email";
@@ -253,16 +270,15 @@ const sendToken = async (req, res) => {
       result.errCode = false;
       result.message = err.message;
       res.status(200).json(result);
-      return;
+    } else {
+      res.status(200).json("Error in send token feature: " + err.message);
     }
-    res.status(200).json("Error in send token feature: " + err.message);
-    return;
   }
 }
 
+// Check token validate and send the link to reset password
 const tokenIsValid = async (req, res) => {
   const { userId: userTokenId, tokenString: token } = req.params;
-  const result = {};
   try {
     const userId = parseInt(verify(userTokenId).value);
     const tokenString = verify(token).value;
@@ -273,21 +289,52 @@ const tokenIsValid = async (req, res) => {
         user_id: userId
       }
     });
+
     if (!checkTokenValid) {
       res.redirect(process.env.FRONTEND_HOST + "authentication/verify-error");
     } else {
       let now = new Date();
       let exp_token = new Date(checkTokenValid.exp_date)
       if (exp_token < now) {
-        // Nếu ngày tạo của token lớn hơn ngày hiện tại
+        // Check token expired
         res.redirect(process.env.FRONTEND_HOST + "authentication/verify-error");
         return;
       } else {
         res.redirect(process.env.FRONTEND_HOST + `authentication/reset-password?userId=${userTokenId}&tokenString=${tokenString}`);
       }
     }
+
   } catch (err) {
     res.status(200).json("Error from verify email feature: " + err.message);
+    return;
+  }
+}
+
+const checkUserHaveResetPassword = async (req, res) => {
+  const { userId: userTokenId, tokenString: token } = req.params;
+  const result = {};
+  try {
+    const userId = parseInt(verify(userTokenId).value);
+    const tokenString = token;
+
+    const checkTokenValid = await db.VerifyToken.findOne({
+      where: {
+        token_string: tokenString,
+        user_id: userId
+      }
+    });
+
+    if (!checkTokenValid) {
+      result.errCode = true;
+      result.message = "Expired or invalid token";
+    } else {
+      result.errCode = false;
+      result.message = "Token valid";
+    }
+
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(200).json("Error from check user have reset password valid: " + err.message);
     return;
   }
 }
@@ -296,11 +343,26 @@ const resetPassword = async (req, res) => {
   try {
     const data = req.body;
     const userId = parseInt(verifyToken(req.query.userId).value)
-    const tokenString = verifyToken(req.query.tokenString);
+    const tokenString = req.query.tokenString;
     const result = {};
 
+    const checkTokenValid = await db.VerifyToken.findOne({
+      where: {
+        token_string: tokenString,
+        user_id: userId
+      }
+    });
+
+
+    if (!checkTokenValid) {
+      result.errCode = true;
+      result.message = "Invalid Token or token expired";
+      res.status(200).json(result);
+      return;
+    }
+
     const updatePassword = await db.User.update({
-      password: hashPassword(data.password)
+      password: hashString(data.password)
     }, {
       where: {
         id: userId,
@@ -336,12 +398,13 @@ const selectAllUsers = async (req, res) => {
   try {
     // Select user và role
     const totalUserRecords = await db.User.findAll();
+
     if (!totalUserRecords.length) {
       res.status(200).json("There are no user in the system");
       return;
     }
     // Pagination Feature
-    const pageSize = 7;
+    const pageSize = 10;
 
     let startIndex = (pageNum - 1) * pageSize;
     let totalLink = Math.ceil(totalUserRecords.length / pageSize);
@@ -371,5 +434,6 @@ module.exports = {
   userLogout,
   sendToken,
   resetPassword,
-  selectAllUsers
+  selectAllUsers,
+  checkUserHaveResetPassword
 }

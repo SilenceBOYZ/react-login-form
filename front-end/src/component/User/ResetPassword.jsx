@@ -1,16 +1,24 @@
 import { useForm } from "react-hook-form";
 import Input from "../ui/Input";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { resetPassword } from "../../api/user";
+import { checkToken, resetPassword } from "../../api/user";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 function ResetPassword() {
   const [isSubmit, setIsSubmit] = useState(false);
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userId");
   const tokenString = searchParams.get("tokenString");
-
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+    async function isValidToken() {
+      const result = await checkToken(userId, tokenString);
+      if(result.errCode) navigate("../verify-error")
+    }
+    isValidToken();
+  }, [userId, tokenString, navigate]);
 
   const {
     register,
@@ -23,14 +31,19 @@ function ResetPassword() {
   async function handleOnSubmit(data) {
     setIsSubmit(true);
     let result = await resetPassword(data, userId, tokenString);
+    if (result?.status) {
+      toast.error(result.message);
+      navigate("../verify-error");
+      return;
+    }
     if (!result.errCode) {
       toast.success(result.message);
-      reset();
-      navigate('../authentication');
+      navigate("../login");
     } else {
       toast.error(result.message);
-      setIsSubmit(false);
+      reset();
     }
+    setIsSubmit(false);
   }
   return (
     <>
@@ -64,12 +77,12 @@ function ResetPassword() {
               ...register("password", {
                 required: "The input can not be empty",
                 minLength: {
-                  value: 7,
-                  message: "Password must be greater than 8 characters",
+                  value: 5,
+                  message: "Invalid character length",
                 },
                 maxLength: {
-                  value: 16,
-                  message: "Password must be less than 8 characters",
+                  value: 40,
+                  message: "Invalid character length",
                 },
                 pattern: {
                   value: /^(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9@]+$/,
@@ -91,19 +104,6 @@ function ResetPassword() {
             register={{
               ...register("confirm_password", {
                 required: "The input can not be empty",
-                minLength: {
-                  value: 7,
-                  message: "Password must be greater than 8 characters",
-                },
-                maxLength: {
-                  value: 16,
-                  message: "Password must be less than 8 characters",
-                },
-                pattern: {
-                  value: /^(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9@]+$/,
-                  message:
-                    "Must contain uppercase, digit, @sybmols, no whitespace",
-                },
                 validate: (fieldValue) => {
                   return fieldValue === getValues()?.password
                     ? null

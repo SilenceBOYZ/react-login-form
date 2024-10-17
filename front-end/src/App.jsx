@@ -4,7 +4,6 @@ import { Toaster } from "react-hot-toast";
 import LoginForm from "./component/User/LoginForm";
 import SignUpForm from "./component/User/SignUpForm";
 import ResetPassword from "./component/User/ResetPassword";
-import CreateNewPassword from "./component/User/CreateNewPassword";
 import VerifyEmail from "./component/User/VerifyEmail";
 
 import Home from "./page/Home";
@@ -34,7 +33,6 @@ function App() {
             <Route path="trouble-signing-in-success" element={<Notification />} />
             <Route path="verify-error" element={<VerifyError />} />
             <Route path="verify-success" element={<VerifySuccess />} />
-            <Route path="create-new-password" element={<CreateNewPassword />} />
             <Route path="signup" element={<SignUpForm />} />
           </Route>
           <Route path="*" element={<Error />} />

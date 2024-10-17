@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { logout } from "../api/user";
 import { useAuthContext } from "../context/AuthenticateContext";
-import UserManagement from "../component/User/UserManagement";
+import UserManagement from "../component/dashboard/UserManagement";
 
 function Home() {
   const navigate = useNavigate();
@@ -16,7 +16,6 @@ function Home() {
     if (!userInfor) navigate("../authentication");
   }, [userInfor, navigate]);
 
-
   function handleLogout() {
     setUserInfor(null);
     sessionStorage.clear();
@@ -25,9 +24,9 @@ function Home() {
   }
 
   return (
-    <div className="min-h-dvh w-full flex items-center justify-center">
-      <div className="w-[82rem] min-h-[45rem] bg-white rounded-lg overflow-hidden">
-        <header className="w-full bg-header h-16 px-14 flex items-center justify-between">
+    <div className="min-h-dvh w-full  ">
+      <div className=" bg-white  overflow-hidden">
+        <header className="w-full bg-indigo-800 h-16 px-14 flex items-center justify-between">
           <h1 className="uppercase text-white font-bold text-2xl">
             Admin Dashboard
           </h1>

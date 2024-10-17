@@ -11,8 +11,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   position: relative;
   height: 100vh;
-  background-color: #EE4E4E;
-  /* background: url("../public/background.jpg"); */
   background-position: center center;
 }
 

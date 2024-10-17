@@ -9,12 +9,13 @@ let generateToken = (value) => {
   return token;
 }
 
+
 let verifyToken = (token) => {
   try {
     const isValid = jwt.verify(token, process.env.JWT_SECRET);
     return isValid;
   } catch (error) {
-    return error.message;
+    throw new Error(error);
   }
 }
 

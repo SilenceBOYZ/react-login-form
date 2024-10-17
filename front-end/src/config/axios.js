@@ -4,7 +4,10 @@ const instance = axios.create({
   baseURL: "http://localhost:8080",
   timeout: 10000,
   withCredentials: true,
-  headers: { 'Content-Type': 'application/json' }
+  headers: {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': 'http://localhost:8080'
+  }
 })
 
 instance.interceptors.response.use(function (response) {

@@ -25,6 +25,12 @@ async function resetPassword(userData, userId, tokenString) {
   return data;
 }
 
+async function checkToken(userId, tokenString) {
+  let data = await instance.get(`/api/user/reset-password/userId/${userId}/tokenString/${tokenString}`);
+  return data;
+}
+
+
 async function logout() {
   let data = await instance.post("/api/user/logout");
   return data;
@@ -42,5 +48,6 @@ export {
   verify,
   sendToken,
   resetPassword,
-  selectUsers
+  selectUsers,
+  checkToken
 } 

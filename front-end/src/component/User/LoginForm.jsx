@@ -14,24 +14,31 @@ function LoginForm() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm();
 
   async function handleOnSubmit(data) {
     setIsSubmit(true);
     let result = await login(data);
+    console.log(result);
     if (result.errCode) {
-      setIsSubmit(true);
-      toast.error(result.message);
-      setIsSubmit(false);
+      if (result?.status === 401) {
+        toast.error(result.message);
+        navigate("../verify-email");
+      } else {
+        setIsSubmit(true);
+        setError(result.fieldError, { type: 'custom', message: result.message });
+        setIsSubmit(false);
+      }
     } else {
-      sessionStorage.setItem("user-login", result.username);
-      setUserInfor(result.username);
+      sessionStorage.setItem("user-login", result.data.accessToken);
+      setUserInfor(result.data.accessToken);
       navigate("/home");
       toast.success(result.message);
     }
   }
-  
+
   return (
     <>
       <div className="text-sm text-right w-full font-semibold text-neutral-500 mb-4">
@@ -85,12 +92,12 @@ function LoginForm() {
               ...register("password", {
                 required: "The input can not be empty",
                 minLength: {
-                  value: 7,
-                  message: "Password must be greater than 8 characters",
+                  value: 5,
+                  message: "Invalid character length",
                 },
                 maxLength: {
-                  value: 16,
-                  message: "Password must be less than 8 characters",
+                  value: 40,
+                  message: "Invalid character length",
                 },
                 pattern: {
                   value: /^(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9@]+$/,

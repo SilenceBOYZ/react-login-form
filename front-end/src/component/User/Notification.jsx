@@ -22,7 +22,7 @@ function Notification() {
         <p className="text-neutral-500 font-medium text-lg ">
           <span className="block">
             {" "}
-            A link to reset your password has been sent to you on{" "}
+            A link to verify your password has been sent to you on{" "}
           </span>
           <span className="block text-neutral-800"> {state?.email}</span>
         </p>

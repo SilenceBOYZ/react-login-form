@@ -14,6 +14,7 @@ function SignUpForm() {
     handleSubmit,
     getValues,
     reset,
+    setError,
     formState: { errors },
   } = useForm();
 
@@ -25,7 +26,7 @@ function SignUpForm() {
       navigate("../verify-email");
       reset();
     } else {
-      toast.error(result.message);
+      setError(result.fieldError, { type: "custom", message: result.message});
       setIsSubmit(false);
     }
   }
@@ -63,12 +64,12 @@ function SignUpForm() {
               ...register("username", {
                 required: "The input can not be empty",
                 minLength: {
-                  value: 6,
-                  message: "Username must larger than 5 characters",
+                  value: 4,
+                  message: "Invalid character length",
                 },
                 maxLength: {
-                  value: 15,
-                  message: "username must less than 12 characters",
+                  value: 30,
+                  message: "Invalid character length",
                 },
                 pattern: {
                   value: /^[\w\s-]+$/,
@@ -108,17 +109,18 @@ function SignUpForm() {
               ...register("password", {
                 required: "The input can not be empty",
                 minLength: {
-                  value: 7,
-                  message: "Password must be greater than 8 characters",
+                  value: 5,
+                  message: "Invalid character length",
                 },
                 maxLength: {
-                  value: 16,
-                  message: "Password must be less than 8 characters",
+                  value: 40,
+                  message: "Invalid character length",
                 },
                 pattern: {
                   value: /^(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9@]+$/,
-                  message: "Must contain uppercase, digit, @sybmols, no whitespace",
-                }
+                  message:
+                    "Must contain uppercase, digit, @sybmols, no whitespace",
+                },
               }),
             }}
             labelField="Password"
@@ -134,18 +136,6 @@ function SignUpForm() {
             register={{
               ...register("confirm_password", {
                 required: "The input can not be empty",
-                minLength: {
-                  value: 7,
-                  message: "Password must be greater than 8 characters",
-                },
-                maxLength: {
-                  value: 16,
-                  message: "Password must be less than 8 characters",
-                },
-                pattern: {
-                  value: /^(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9@]+$/,
-                  message: "Must contain uppercase, digit, @sybmols, no whitespace",
-                },
                 validate: (fieldValue) => {
                   return fieldValue === getValues()?.password
                     ? null
