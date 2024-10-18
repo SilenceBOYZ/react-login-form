@@ -40,6 +40,19 @@ tr.row-body:last-child {
   border-bottom: none;
 }
 
+ ::-webkit-scrollbar {
+    width: 10px;
+    height: 14px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(220, 5%, 20%);
+  }
+  ::-webkit-scrollbar-track {
+    border: 2px solid #fff;
+    background-color: #fff;
+  }
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
