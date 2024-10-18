@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { HiEye, HiEyeSlash } from "react-icons/hi2";
 import { HiMiniUser, HiEnvelope } from "react-icons/hi2";
 
 function Input({
@@ -12,7 +10,6 @@ function Input({
   errorMessage,
   disable = false,
 }) {
-  const [isOpen, setIsOpen] = useState(false);
   const style =
     "py-1 px-4 border-2 w-full rounded-md tracking-wider transition-all duration-300  outline-none text-black text-lg placeholder:font-medium placeholder:text-base";
   const labelStyle =
@@ -25,26 +22,14 @@ function Input({
         <input
           required
           id={name}
-          type={!isOpen ? "password" : "text"}
+          type="password"
           placeholder={placeholder}
           {...register}
           name={name}
           disabled={disable}
           className={`${style}`}
         />
-        <button
-          type="button"
-          disabled={disable}
-          onClick={() => setIsOpen((open) => !open)}
-          className="absolute right-4 top-8"
-        >
-          {" "}
-          {isOpen ? (
-            <HiEye size={20} className="text-neutral-500" />
-          ) : (
-            <HiEyeSlash size={20} className="text-neutral-500" />
-          )}{" "}
-        </button>
+
         {!errorMessage ? null : (
           <p className=" mt-1 text-sm text-red-600 font-semibold mb-0">
             {errorMessage[`${name}`]?.message}

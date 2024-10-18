@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { findUser } from "../api/user";
 
 function RequireAuth() {
-  const { userInfor } = useAuthContext();
+  const { userInfor, setUserInfor } = useAuthContext();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,7 +12,13 @@ function RequireAuth() {
     else {
       findUser(userInfor)
         .then((result) => {
-          if (result.data.rolename == "admin") {
+          if (result?.errCode == 401) {
+            setUserInfor(null);
+            sessionStorage.removeItem('user-login');
+            // navigate("../authentication");
+            return;
+          }
+          if (result?.data?.rolename == "admin") {
             navigate("admin");
           } else {
             navigate("home");
@@ -20,7 +26,7 @@ function RequireAuth() {
         })
         .catch((err) => console.error(err));
     }
-  }, [navigate, userInfor]);
+  }, [navigate, userInfor, setUserInfor]);
 
   return (
     <div className="min-h-dvh w-full">
