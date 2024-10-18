@@ -5,12 +5,16 @@ import { selectUsers } from "../../api/user";
 import UserView from "./UserView";
 import { useSearchParams } from "react-router-dom";
 import LinearProgress from "@mui/material/LinearProgress";
-import Pagination from "../ui/Pagination";
+import { Pagination } from "@mui/material";
+// import Pagination from "../ui/Pagination";
 
 function UserManagement() {
   const [users, setUsers] = useState([]);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   let pageNum = parseInt(searchParams.get("pageNum")) || 1;
+  if (pageNum > users?.totalLink) {
+    setSearchParams(1);
+  }
 
   useEffect(() => {
     async function selectUser() {
@@ -19,6 +23,10 @@ function UserManagement() {
     }
     selectUser();
   }, [setUsers, pageNum]);
+
+  function handleOnchange() {
+      
+  }
 
   return (
     <>
@@ -89,10 +97,15 @@ function UserManagement() {
                   ))}
                 </tbody>
               </table>
-              <Pagination
+              {/* <Pagination
                 endingLink={users.totalLink}
                 nextPage={pageNum}
                 prevPage={pageNum}
+              /> */}
+              <Pagination
+                count={users.totalLink}
+                color="secondary"
+                onChange={handleOnchange}
               />
             </>
           ) : (
