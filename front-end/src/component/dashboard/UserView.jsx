@@ -1,6 +1,5 @@
 import { IoCalendarOutline } from "react-icons/io5";
 import { MdEditCalendar } from "react-icons/md";
-import { FaEllipsisV } from "react-icons/fa";
 import { FaRegTrashCan, FaPenToSquare } from "react-icons/fa6";
 import { formatDate } from "../../utils/formatDate";
 
@@ -18,11 +17,7 @@ function UserView({ index, user }) {
       <td>{email}</td>
       <td className="text-[0.75rem] capitalize">
         {" "}
-        <span
-          className={`${roleColor[rolename]} text-lg`}
-        >
-          {rolename}
-        </span>
+        <span className={`${roleColor[rolename]} text-lg`}>{rolename}</span>
       </td>
       <td>
         <IoCalendarOutline className="inline-block" size={20} />{" "}
@@ -33,18 +28,25 @@ function UserView({ index, user }) {
         <span className="text-sm">{formatDate(updatedAt)}</span>{" "}
       </td>
       <td className="text-left">
-        <span className={`${is_active ? 'text-blue-500': "text-red-500"}   rounded-lg text-lg capitalize`}>active</span>
+        <span
+          className={`${
+            is_active ? "text-blue-500" : "text-red-500"
+          }   rounded-lg text-lg capitalize`}
+        >
+          active
+        </span>
       </td>
       <td className="text-center relative">
-        <button className="p-2 cursor-pointer">
-          <FaEllipsisV className="text-xl" />
-        </button>
-        <ul className="absolute text-left border-[1px]   bg-white px-4 py-2 rounded-md shadow-md z-10 right-5 top-15 cursor-pointer flex gap-3 invisible opacity-0  text-xl transition-all duration-600">
+        <ul className=" text-left cursor-pointer flex gap-3 text-xl transition-all duration-600">
           <li className="p-2">
-            <FaRegTrashCan className="hover:text-red-700" />
+            <button>
+              <FaPenToSquare className="hover:text-red-700" />
+            </button>
           </li>
           <li className="p-2">
-            <FaPenToSquare className="hover:text-red-700" />
+            <button>
+              <FaRegTrashCan className="hover:text-red-700" />
+            </button>
           </li>
         </ul>
       </td>
