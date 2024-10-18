@@ -42,10 +42,10 @@ function Header({ title }) {
           sx={{ width: "12rem", maxWidth: 360, bgcolor: "background.paper" }}
         >
           <List component="nav" aria-label="secondary mailbox folder">
-            <ListItemButton>
+            <ListItemButton className="hover:bg-[#999_!important] hover:text-[#fff_!important]">
               <ListItemText primary="Information" />
             </ListItemButton>
-            <ListItemButton className="hover:bg-[rgba()]" onClick={handleLogout}>
+            <ListItemButton className="hover:bg-[#999_!important] hover:text-[#fff_!important]" onClick={handleLogout}>
               <ListItemText primary="Logout" />
             </ListItemButton>
           </List>

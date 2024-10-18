@@ -5,11 +5,13 @@ import { selectUsers } from "../../api/user";
 import UserView from "./UserView";
 import { useSearchParams } from "react-router-dom";
 import LinearProgress from "@mui/material/LinearProgress";
-import { Pagination } from "@mui/material";
-// import Pagination from "../ui/Pagination";
+// import { Pagination } from "@mui/material";
+import Pagination from "../ui/Pagination";
 
 function UserManagement() {
   const [users, setUsers] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+
   const [searchParams, setSearchParams] = useSearchParams();
   let pageNum = parseInt(searchParams.get("pageNum")) || 1;
   if (pageNum > users?.totalLink) {
@@ -24,9 +26,7 @@ function UserManagement() {
     selectUser();
   }, [setUsers, pageNum]);
 
-  function handleOnchange() {
-      
-  }
+  function handleOnchange() {}
 
   return (
     <>
@@ -37,23 +37,36 @@ function UserManagement() {
               <input
                 type="text"
                 placeholder="Type the user name"
-                className="py-1.5 pl-2 pr-6 text-sm border-2 rounded-md outline-none target:border-none w-[18rem]"
+                className="py-3 pl-4  pr-6 text-lg border-2 rounded-md outline-none target:border-none w-[24rem] font-medium text-neutral-500"
               />
-              <button className="-ml-6">
+              <button className="-ml-8">
                 <FaSearch className="text-neutral-500" />
               </button>
             </div>
-            <div className="relative flex ">
-              <button className="border-2 p-2 rounded-md ">
-                <IoFilter />
-                <ul className="absolute text-left text-sm bg-white px-4 py-2 rounded-md shadow-md z-10 right-0 top-10 invisible opacity-0 cursor-pointer">
-                  <li className="py-1 mb-2 border-b-[2px] hover:border-red-600 transition-all duration-600 ">
+            <div className="relative flex">
+              <button
+                className="border-2 p-2 rounded-md"
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                <span className="px-1 flex items-center gap-4">
+                  <IoFilter size={18} />
+                  <span className="text-lg font-medium text-neutral-500">
+                    Filter
+                  </span>
+                </span>
+
+                <ul
+                  className={`absolute text-left text-sm bg-white rounded-md
+                 shadow-md z-10 right-0 top-16 w-[12rem] cursor-pointer ${!isOpen ? "invisible opacity-0" : "visible opacity-100"}
+                 transition-all duration-500`}
+                >
+                  <li className="py-4 mb-2 px-4 font-medium hover:bg-neutral-200 transition-all duration-600">
                     Order A to Z
                   </li>
-                  <li className="py-1 mb-2 border-b-[2px] hover:border-red-600">
+                  <li className="py-4 mb-2 px-4 font-medium hover:bg-neutral-200 transition-all duration-600">
                     Order Z to A
                   </li>
-                  <li className="py-1 mb-2 border-b-[2px] hover:border-red-600">
+                  <li className="py-4 mb-2 px-4 font-medium hover:bg-neutral-200 transition-all duration-600">
                     Filter by position
                   </li>
                 </ul>
@@ -97,16 +110,12 @@ function UserManagement() {
                   ))}
                 </tbody>
               </table>
-              {/* <Pagination
+              <Pagination
                 endingLink={users.totalLink}
                 nextPage={pageNum}
                 prevPage={pageNum}
-              /> */}
-              <Pagination
-                count={users.totalLink}
-                color="secondary"
-                onChange={handleOnchange}
               />
+           
             </>
           ) : (
             <LinearProgress />
