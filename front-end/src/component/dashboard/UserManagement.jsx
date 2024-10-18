@@ -5,8 +5,7 @@ import { selectUsers } from "../../api/user";
 import UserView from "./UserView";
 import { useSearchParams } from "react-router-dom";
 import LinearProgress from "@mui/material/LinearProgress";
-// import { Pagination } from "@mui/material";
-import Pagination from "../ui/Pagination";
+import { Pagination } from "@mui/material";
 
 function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -26,12 +25,14 @@ function UserManagement() {
     selectUser();
   }, [setUsers, pageNum]);
 
-  function handleOnchange() {}
+  function handleOnchange(e, target) {
+    setSearchParams({ pageNum: target });
+  }
 
   return (
     <>
       <div className="px-12 py-6 h-full">
-        <div className=" px-6 py-4 shadow-lg rounded-xl border-2 ">
+        <div className=" px-6 py-4 shadow-lg rounded-xl border-2  min-h-[50rem] flex flex-col">
           <div className="mb-4 w-full flex gap-6">
             <div className="flex ">
               <input
@@ -57,7 +58,9 @@ function UserManagement() {
 
                 <ul
                   className={`absolute text-left text-sm bg-white rounded-md
-                 shadow-md z-10 right-0 top-16 w-[12rem] cursor-pointer ${!isOpen ? "invisible opacity-0" : "visible opacity-100"}
+                 shadow-md z-10 right-0 top-16 w-[12rem] cursor-pointer ${
+                   !isOpen ? "invisible opacity-0" : "visible opacity-100"
+                 }
                  transition-all duration-500`}
                 >
                   <li className="py-4 mb-2 px-4 font-medium hover:bg-neutral-200 transition-all duration-600">
@@ -75,7 +78,7 @@ function UserManagement() {
           </div>
           {users?.data?.length ? (
             <>
-              <table className="w-full mb-4">
+              <table className="w-full mb-4 ">
                 <thead className="">
                   <tr className="text-neutral-500">
                     <th scope="col" className="w-[5%] pl-2">
@@ -104,18 +107,20 @@ function UserManagement() {
                     </th>
                   </tr>
                 </thead>
+
                 <tbody className="select-none">
                   {users?.data.map((user, index) => (
                     <UserView key={user.username} index={index} user={user} />
                   ))}
                 </tbody>
               </table>
+
               <Pagination
-                endingLink={users.totalLink}
-                nextPage={pageNum}
-                prevPage={pageNum}
+                className="mt-auto self-end"
+                color="secondary"
+                count={users.totalLink}
+                onChange={handleOnchange}
               />
-           
             </>
           ) : (
             <LinearProgress />
