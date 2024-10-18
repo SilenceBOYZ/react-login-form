@@ -7,9 +7,8 @@ import { formatDate } from "../../utils/formatDate";
 function UserView({ index, user }) {
   const { username, email, rolename, createdAt, updatedAt, is_active } = user;
   const roleColor = {
-    admin: "bg-yellow-400",
-    customer: "bg-blue-400",
-    designer: "bg-purple-400",
+    customer: "text-blue-600",
+    designer: "text-purple-600",
   };
 
   return (
@@ -17,10 +16,10 @@ function UserView({ index, user }) {
       <td className="pl-2">{++index}</td>
       <td className="">{username}</td>
       <td>{email}</td>
-      <td className="uppercase text-[0.75rem]">
+      <td className="text-[0.75rem] capitalize">
         {" "}
         <span
-          className={`${roleColor[rolename]} py-1 px-3 text-white rounded-lg`}
+          className={`${roleColor[rolename]} text-lg`}
         >
           {rolename}
         </span>
@@ -33,8 +32,8 @@ function UserView({ index, user }) {
         <MdEditCalendar className="inline-block" size={20} />{" "}
         <span className="text-sm">{formatDate(updatedAt)}</span>{" "}
       </td>
-      <td>
-        <span className={`${is_active ? 'bg-blue-500': "bg-red-500"} py-1 px-3 text-white rounded-lg text-sm`}>active</span>
+      <td className="text-left">
+        <span className={`${is_active ? 'text-blue-500': "text-red-500"}  text-white rounded-lg text-lg capitalize`}>active</span>
       </td>
       <td className="text-center relative">
         <button className="p-2 cursor-pointer">

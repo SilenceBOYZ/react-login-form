@@ -15,7 +15,6 @@ function UserManagement() {
   useEffect(() => {
     async function selectUser() {
       const result = await selectUsers(pageNum);
-      console.log(result);
       setUsers(result);
     }
     selectUser();

@@ -5,6 +5,7 @@ import { login } from "../../api/user";
 import toast from "react-hot-toast";
 import { useAuthContext } from "../../context/AuthenticateContext";
 import { useState } from "react";
+import LinkNavigate from "./LinkNavigate";
 
 function LoginForm() {
   const navigate = useNavigate();
@@ -28,29 +29,27 @@ function LoginForm() {
         navigate("../verify-email");
       } else {
         setIsSubmit(true);
-        setError(result.fieldError, { type: 'custom', message: result.message });
+        setError(result.fieldError, {
+          type: "custom",
+          message: result.message,
+        });
         setIsSubmit(false);
       }
     } else {
-      sessionStorage.setItem("user-login", result.data.accessToken);
-      setUserInfor(result.data.accessToken);
-      navigate("/home");
+      sessionStorage.setItem("user-login", result.data);
+      setUserInfor(result.data);
+      navigate("../../home");
       toast.success(result.message);
     }
   }
 
   return (
     <>
-      <div className="text-sm text-right w-full font-semibold text-neutral-500 mb-4">
-        <span className="mr-2">Create a new account</span>
-        <Link
-          to={"../signup"}
-          className="p-0.5 px-3 border-[2px] rounded-xl text-sm"
-        >
-          {" "}
-          <span className="text-[0.75rem] pr-1">Regist</span>
-        </Link>
-      </div>
+      <LinkNavigate
+        title="Create a new account"
+        link="../signup"
+        buttonTitle="Regist"
+      />
 
       <div className="px-[3rem]">
         <div className="mb-4 font-bold">

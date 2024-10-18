@@ -155,21 +155,10 @@ const userLogin = async (req, res) => {
           result.status = 401;
           result.message = "User haven't verify email";
         } else {
-          const { rolename } = await db.Role.findOne({
-            attributes: [['name', 'rolename']],
-            where: {
-              id: user.role_id,
-            },
-            raw: true,
-          });
-          const accessToken = generateToken(user.username);
+          const accessToken = generateToken(user.id);
           req.session.userLogin = accessToken;
           result.errCode = false;
-          result.data = {
-            name: user.username,
-            rolename,
-            accessToken
-          };
+          result.data = accessToken;
           result.message = 'login successfully';
         }
       }
@@ -409,7 +398,16 @@ const selectAllUsers = async (req, res) => {
     let startIndex = (pageNum - 1) * pageSize;
     let totalLink = Math.ceil(totalUserRecords.length / pageSize);
 
-    const userRecords = await db.sequelize.query(`SELECT users.id, users.username, users.email, users.is_active, roles.name as rolename, users.createdAt, users.updatedAt FROM users, roles WHERE users.role_id = roles.id LIMIT ${startIndex} , ${pageSize}`, { type: QueryTypes.SELECT })
+    const userRecords = await db.sequelize.query(
+      ` 
+        SELECT users.id, users.username, users.email, 
+        users.is_active, roles.name as rolename, users.createdAt, 
+        users.updatedAt FROM users, roles 
+        WHERE users.role_id = roles.id
+        AND users.role_id NOT IN (1)
+        LIMIT ${startIndex} , ${pageSize}
+      `,
+      { type: QueryTypes.SELECT })
     if (!userRecords.length) {
       result.errCode = true;
       result.message = "There are no user in the system";
@@ -426,6 +424,34 @@ const selectAllUsers = async (req, res) => {
   }
 }
 
+const findUser = async (req, res) => {
+  try {
+    const result = {};
+    const userId = verify(req.params.userId).value;
+    const user = await db.User.findByPk(userId, {
+      attributes: ["username", "role_id"]
+    });
+    if (!user) {
+      result.errCode = true;
+      result.message = "User does not exist";
+    } else {
+      const { rolename } = await db.Role.findOne({
+        attributes: [['name', 'rolename']],
+        where: {
+          id: user.role_id,
+        }
+      });
+      user.rolename = rolename;
+      result.errCode = false;
+      result.data = user;
+      result.message = "Found a user";
+    }
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json("HEllo")
+  }
+}
+
 module.exports = {
   tokenIsValid,
   createUser,
@@ -435,5 +461,6 @@ module.exports = {
   sendToken,
   resetPassword,
   selectAllUsers,
-  checkUserHaveResetPassword
+  checkUserHaveResetPassword,
+  findUser
 }

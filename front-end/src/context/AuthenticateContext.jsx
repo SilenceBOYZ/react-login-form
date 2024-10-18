@@ -2,7 +2,6 @@ import { createContext, useContext, useState } from "react";
 
 const AuthenticateContext = createContext();
 
-
 function AuthenticateProvider({ children }) {
   const [userInfor, setUserInfor] = useState(
     sessionStorage.getItem("user-login") || null

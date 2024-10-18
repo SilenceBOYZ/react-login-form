@@ -25,12 +25,13 @@ app.use(session({
   secret: 'keyboard cat',
   store: redis.store,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: true, // false value Don't create session until something is stored
   cookie: {
     secure: false,
     httpOnly: true,
-    maxAge: 60 * 60 * 1000
-  }
+    maxAge: 24 * 60 * 60 * 1000
+  },
+  rolling: false, // Disable session expiration refresh on each request
 }));
 
 app.use(cookieParser());
