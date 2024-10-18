@@ -1,9 +1,10 @@
 import { useForm } from "react-hook-form";
 import Input from "../ui/Input";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { checkToken, resetPassword } from "../../api/user";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
+import LinkNavigate from "./LinkNavigate";
 function ResetPassword() {
   const [isSubmit, setIsSubmit] = useState(false);
   const [searchParams] = useSearchParams();
@@ -11,11 +12,10 @@ function ResetPassword() {
   const tokenString = searchParams.get("tokenString");
   const navigate = useNavigate();
 
-
   useEffect(() => {
     async function isValidToken() {
       const result = await checkToken(userId, tokenString);
-      if(result.errCode) navigate("../verify-error")
+      if (result.errCode) navigate("../verify-error");
     }
     isValidToken();
   }, [userId, tokenString, navigate]);
@@ -47,16 +47,11 @@ function ResetPassword() {
   }
   return (
     <>
-      <div className="text-sm text-right w-full font-semibold text-neutral-500 mb-4">
-        <span className="mr-2">Already have an account</span>
-        <Link
-          to={"../login"}
-          className="p-0.5 px-3 border-[2px] rounded-xl text-sm"
-        >
-          {" "}
-          <span className="text-[0.75rem]">Sign in</span>
-        </Link>
-      </div>
+      <LinkNavigate
+        title="Already have an account"
+        link="../login"
+        buttonTitle="Sign in"
+      />
 
       <div className="px-[3rem]">
         <div className="font-bold text-center mb-8">

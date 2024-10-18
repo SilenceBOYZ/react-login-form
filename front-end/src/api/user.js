@@ -37,7 +37,12 @@ async function logout() {
 }
 
 async function selectUsers(pageNum) {
-  let data = await instance.get(`/api/user/select-user?pageNum=${pageNum}`);
+  let data = await instance.get(`/api/user/select-users?pageNum=${pageNum}`);
+  return data;
+}
+
+async function findUser(value) {
+  let data = await instance.post(`/api/user/get-user/userId/${value}`);
   return data;
 }
 
@@ -49,5 +54,6 @@ export {
   sendToken,
   resetPassword,
   selectUsers,
-  checkToken
+  checkToken,
+  findUser
 } 

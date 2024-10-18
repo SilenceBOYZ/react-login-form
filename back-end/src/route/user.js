@@ -1,5 +1,5 @@
 const express = require("express");
-const { createUser, userLogin, verifyEmail, userLogout, sendToken, resetPassword, selectAllUsers, tokenIsValid, checkUserHaveResetPassword } = require("../controllers/user");
+const { createUser, userLogin, verifyEmail, userLogout, sendToken, resetPassword, selectAllUsers, tokenIsValid, checkUserHaveResetPassword, findUser } = require("../controllers/user");
 const { checkUserAccess } = require("../middleware/checkUserAccess");
 const { validateInputData } = require("../middleware/validateInputData");
 const router = express.Router();
@@ -15,6 +15,7 @@ router.get('/check-token-valid/userId/:userId/tokenString/:tokenString', tokenIs
 router.get('/reset-password/userId/:userId/tokenString/:tokenString', checkUserHaveResetPassword);
 router.post('/reset-password', validateInputData, resetPassword);
 
-router.get('/select-user', checkUserAccess, selectAllUsers);
+router.get('/select-users', checkUserAccess, selectAllUsers);
+router.post('/get-user/userId/:userId', findUser);
 
 module.exports = router;
