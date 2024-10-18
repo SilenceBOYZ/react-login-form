@@ -33,7 +33,7 @@ function UserView({ index, user }) {
         <span className="text-sm">{formatDate(updatedAt)}</span>{" "}
       </td>
       <td className="text-left">
-        <span className={`${is_active ? 'text-blue-500': "text-red-500"}  text-white rounded-lg text-lg capitalize`}>active</span>
+        <span className={`${is_active ? 'text-blue-500': "text-red-500"}   rounded-lg text-lg capitalize`}>active</span>
       </td>
       <td className="text-center relative">
         <button className="p-2 cursor-pointer">

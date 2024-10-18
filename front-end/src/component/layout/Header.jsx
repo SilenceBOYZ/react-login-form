@@ -26,8 +26,13 @@ function Header({ title }) {
           className="w-12 h-12 rounded-full border-2 "
         />
 
-        <button onClick={() => setIsOpen(!isOpen)} className="flex items-center p-.5 px-2.5 rounded-md bg-white cursor-pointer">
-          <IoSettingsOutline size={28} />
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center rounded-md cursor-pointer"
+        >
+          <span className="bg-white p-2 rounded-lg hover:bg-orange-200 transition-all duration-500">
+            <IoSettingsOutline size={24} />
+          </span>
         </button>
 
         <Box
@@ -40,7 +45,7 @@ function Header({ title }) {
             <ListItemButton>
               <ListItemText primary="Information" />
             </ListItemButton>
-            <ListItemButton onClick={handleLogout}>
+            <ListItemButton className="hover:bg-[rgba()]" onClick={handleLogout}>
               <ListItemText primary="Logout" />
             </ListItemButton>
           </List>
