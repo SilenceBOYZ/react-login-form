@@ -36,8 +36,11 @@ async function logout() {
   return data;
 }
 
-async function selectUsers(pageNum) {
-  let data = await instance.get(`/api/user/select-users?pageNum=${pageNum}`);
+async function selectUsers(pageNum, username) {
+  if(!username) {
+    username = "all";
+  }
+  let data = await instance.get(`/api/user/select-users?pageNum=${pageNum}&username=${username}`);
   return data;
 }
 

@@ -66,9 +66,24 @@ const loginValidate = Joi.object({
   password: password
 })
 
+const usernameQuery = Joi.string()
+  .alphanum()
+  .min(1)
+  .max(30)
+  .pattern(new RegExp('^[a-zA-Z0-9]+$'))
+  .lowercase()
+  .required()
+  .messages({
+    'string.pattern.base': 'Username can only contain letters and numbers (no special characters or whitespace)',
+    'string.min': 'Invalid character length',
+    'string.max': 'Invalid character length',
+    'string.empty': 'Username cannot be empty',
+    'any.required': 'Username is required'
+  });
 
 module.exports = {
   registValidate,
   loginValidate,
-  emailValidate: email 
+  emailValidate: email,
+  usernameValidator: usernameQuery,
 }

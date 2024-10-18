@@ -1,10 +1,10 @@
 const db = require("../models/index");
-const { QueryTypes } = require('sequelize');
+const { QueryTypes, where, Op } = require('sequelize');
 const { hashString, compareHash } = require("../utils/hashString");
 const { generateToken, verifyToken: verify, verifyToken } = require("../services/jsonwebtoken");
 const { v4: uuidv4 } = require('uuid');
 const { sendPasswordResetEmail, sendLinkToVerifyAccount } = require("../services/nodemailer");
-const { registValidate, loginValidate, emailValidate } = require("../utils/validateData");
+const { registValidate, loginValidate, emailValidate, usernameValidator } = require("../utils/validateData");
 
 const createUser = async (req, res) => {
   const result = {};
@@ -379,14 +379,26 @@ const resetPassword = async (req, res) => {
 }
 
 const selectAllUsers = async (req, res) => {
-  const pageNum = parseInt(req.query.pageNum);
-  if (!pageNum) {
-    pageNum = 1;
-  }
   const result = {};
   try {
-    // Select user và role
-    const totalUserRecords = await db.User.findAll();
+    const pageNum = parseInt(req.query.pageNum);
+    const name = await usernameValidator.validateAsync(req.query.username);
+    if (!pageNum) {
+      pageNum = 1;
+    }
+    const option = {};
+    let queryOption = '';
+    if (name && name.toLocaleLowerCase() != 'all') {
+      option.where = {
+        username: {
+          [Op.like]: name + "%"
+        }
+      }
+      queryOption = !name ? '' : ' AND users.username LIKE ' + `'${name + '%'}' `;
+    }
+    console.log(queryOption);
+    const totalUserRecords = await db.User.findAll(option);
+
 
     if (!totalUserRecords.length) {
       res.status(200).json("There are no user in the system");
@@ -398,29 +410,39 @@ const selectAllUsers = async (req, res) => {
     let startIndex = (pageNum - 1) * pageSize;
     let totalLink = Math.ceil(totalUserRecords.length / pageSize);
 
+
     const userRecords = await db.sequelize.query(
       ` 
         SELECT users.id, users.username, users.email, 
         users.is_active, roles.name as rolename, users.createdAt, 
         users.updatedAt FROM users, roles 
         WHERE users.role_id = roles.id
-        AND users.role_id NOT IN (1)
+        AND users.role_id NOT IN (1) ${queryOption}
         LIMIT ${startIndex} , ${pageSize}
       `,
       { type: QueryTypes.SELECT })
+
     if (!userRecords.length) {
       result.errCode = true;
       result.message = "There are no user in the system";
       res.status(200).json(result);
       return;
     }
+
     result.totalLink = totalLink;
     result.errCode = false;
     result.message = 'Loading data suceessfully';
     result.data = userRecords;
     res.status(200).json(result);
+
   } catch (err) {
-    res.status(500).json("Error select user all records feature: ", err.message);
+    result.errCode = true;
+    if (err.isJoi) {
+      result.message = err.message;
+      res.status(200).json(result);
+    } else {
+      res.status(200).json("Error select user all records feature: " + err.message);
+    }
   }
 }
 
@@ -448,7 +470,7 @@ const findUser = async (req, res) => {
     }
     res.status(200).json(result);
   } catch (error) {
-    res.status(500).json("HEllo")
+    res.status(200).json(err.message);
   }
 }
 
