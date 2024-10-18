@@ -16,6 +16,6 @@ router.get('/reset-password/userId/:userId/tokenString/:tokenString', checkUserH
 router.post('/reset-password', validateInputData, resetPassword);
 
 router.get('/select-users', checkUserAccess, selectAllUsers);
-router.post('/get-user/userId/:userId', findUser);
+router.post('/get-user/userId/:userId', checkUserAccess, findUser);
 
 module.exports = router;

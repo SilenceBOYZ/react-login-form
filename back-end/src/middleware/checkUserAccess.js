@@ -5,16 +5,14 @@ let checkUserAccess = async (req, res, next) => {
     let token = req?.session?.userLogin;
     if (!token) {
       res.status(200).json({
-        errCode: 404,
+        errCode: 401,
         message: "Login to our system",
       })
       return;
     } 
     let isValidToken = verifyToken(token);
-    if(isValidToken.iat > isValidToken.exp) {
-      res.status(400).json("Invalid token")
-      return;
-    }
+
+
 
     if(typeof isValidToken == 'object') {
       next();
@@ -23,6 +21,10 @@ let checkUserAccess = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(200).json({
+      errCode: 401,
+      message: error.message
+    })
   }
 }
 

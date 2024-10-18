@@ -1,5 +1,5 @@
 const db = require("../models/index");
-const { QueryTypes, where, Op } = require('sequelize');
+const { QueryTypes, Op } = require('sequelize');
 const { hashString, compareHash } = require("../utils/hashString");
 const { generateToken, verifyToken: verify, verifyToken } = require("../services/jsonwebtoken");
 const { v4: uuidv4 } = require('uuid');
@@ -9,10 +9,10 @@ const { registValidate, loginValidate, emailValidate, usernameValidator } = requ
 const createUser = async (req, res) => {
   const result = {};
   try {
-    const data = await registValidate.validateAsync(req.body);
+    const { email, username, password } = await registValidate.validateAsync(req.body);
     const checkEmailExist = await db.User.findOne({
       where: {
-        email: data.email
+        email
       }
     });
 
@@ -23,7 +23,7 @@ const createUser = async (req, res) => {
     } else if (!checkEmailExist) {
       const checkUserExist = await db.User.findOne({
         where: {
-          username: data.username,
+          username,
         }
       })
       if (checkUserExist) {
@@ -35,7 +35,7 @@ const createUser = async (req, res) => {
         const newUser = await db.User.create({
           username: data.username.toLowerCase(),
           email: data.email.toLowerCase(),
-          password: hashString(data.password),
+          password: hashString(password),
           role_id: 2,
         });
 
@@ -470,9 +470,11 @@ const findUser = async (req, res) => {
     }
     res.status(200).json(result);
   } catch (error) {
-    res.status(200).json(err.message);
+    res.status(200).json(error.message);
   }
 }
+
+
 
 module.exports = {
   tokenIsValid,
